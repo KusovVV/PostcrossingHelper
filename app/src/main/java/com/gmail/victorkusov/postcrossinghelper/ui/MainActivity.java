@@ -2,6 +2,8 @@ package com.gmail.victorkusov.postcrossinghelper.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -278,22 +280,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart() {
         super.onStart();
+        checkAuthification();
+}
 
+    private void checkAuthification() {
         // [Check Auth]
         if (mFlipper.getDisplayedChild() == 0) {
             mFlipper.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (mFirebaseAuth.getCurrentUser() != null) {
-                        Log.d(TAG, "FirebaseAuth: Login is ok");
-                        mFlipper.showNext();
+                    ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+                    if (networkInfo != null) {
+                        if (networkInfo.isConnectedOrConnecting()) {
+                            if (mFirebaseAuth.getCurrentUser() != null) {
+                                Log.d(TAG, "FirebaseAuth: Login is ok");
+                                mFlipper.showNext();
+                            }
+                            mFlipper.showNext();
+                        }
+                    } else {
+                        mFlipper.setDisplayedChild(2);
+                        Toast.makeText(MainActivity.this, "Unable to connect! Check your network connection and try again", Toast.LENGTH_SHORT).show();
                     }
-                    mFlipper.showNext();
                 }
             }, SCREEN_CHANGE_DURATION);
         } else {
             Log.d(TAG, "FirebaseAuth: Login is failed");
         }
+
+
     }
 
     @Override
