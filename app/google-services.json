@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "633585445123",
+    "firebase_url": "https://postcrossinghelper-5a415.firebaseio.com",
+    "project_id": "postcrossinghelper-5a415",
+    "storage_bucket": "postcrossinghelper-5a415.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633585445123:android:b56af77845d90622",
+        "android_client_info": {
+          "package_name": "com.gmail.victorkusov.postcrossinghelper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633585445123-r3lg8nt682pmnj88f79upkncb20mj92e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gmail.victorkusov.postcrossinghelper",
+            "certificate_hash": "773e4c0518e2e68cc482a1b2e77189d1d8564807"
+          }
+        },
+        {
+          "client_id": "633585445123-iqrf6iuuqrps8p5d6vgeo5pcisd5qeen.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDttDjMP27a7g_p0VpfjxW4CBVpdDuFNWk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633585445123-iqrf6iuuqrps8p5d6vgeo5pcisd5qeen.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

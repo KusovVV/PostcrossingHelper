@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PostcrossingHelper</string>
+
+    <string name="facebook_app_id">883273265209425</string>
+    <string name="fb_login_protocol_scheme">fb883273265209425</string>
+
+
+
+    <string name="sign_ed_email">Email</string>
+    <string name="sign_ed_password">Password</string>
+    <string name="sign_btn_register">Register</string>
+    <string name="sign_btn_sign_in">Sign In</string>
 </resources>
