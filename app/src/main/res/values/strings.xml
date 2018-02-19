@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PostcrossingHelper</string>
+    <string name="app_name" translatable="false">PostcrossingHelper</string>
 
     <string name="facebook_app_id">883273265209425</string>
-    <string name="fb_login_protocol_scheme">fb883273265209425</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb883273265209425</string>
 
 
+    <string name="sign_ed_email" translatable="false">Email</string>
+    <string name="sign_ed_password" translatable="false">Password</string>
+    <string name="sign_btn_register" translatable="false">Register</string>
+    <string name="sign_btn_sign_in" translatable="false">Sign In</string>
+    <string name="main_menu_code">code</string>
+    <string name="main_menu_place">place</string>
+    <string name="main_menu_nearly_places">places</string>
 
-    <string name="sign_ed_email">Email</string>
-    <string name="sign_ed_password">Password</string>
-    <string name="sign_btn_register">Register</string>
-    <string name="sign_btn_sign_in">Sign In</string>
+
+    <string name="str_empty_list">To add information use search menu button \n enter postal code</string>
+    <string name="str_empty_place">To add information use search menu button \n enter place name</string>
+
+
 </resources>
