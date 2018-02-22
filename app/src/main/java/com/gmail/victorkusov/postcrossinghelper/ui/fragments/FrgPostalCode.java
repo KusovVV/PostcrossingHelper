@@ -4,21 +4,20 @@ package com.gmail.victorkusov.postcrossinghelper.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.gmail.victorkusov.postcrossinghelper.R;
 import com.gmail.victorkusov.postcrossinghelper.model.PostalCode;
-import com.gmail.victorkusov.postcrossinghelper.model.PostalCodesList;
-import com.gmail.victorkusov.postcrossinghelper.ui.adapters.RecyclerViewAdapter;
+import com.gmail.victorkusov.postcrossinghelper.ui.adapters.DataListAdapter;
 import com.gmail.victorkusov.postcrossinghelper.ui.network.IGetPostcrossingData;
+import com.gmail.victorkusov.postcrossinghelper.R;
 import com.gmail.victorkusov.postcrossinghelper.ui.network.RetrofitHelper;
+import com.gmail.victorkusov.postcrossinghelper.model.PostalCodesList;
 
 import java.util.List;
 
@@ -26,56 +25,60 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FrgPlace extends BaseFragment {
+public class FrgPostalCode extends BaseFragment {
 
-    public static final String TAG = "LOG " + FrgPlace.class.getSimpleName();
+    public static final String TAG = "LOG " + FrgPostalCode.class.getSimpleName();
 
-    private RecyclerView mRecyclerView;
-    private RecyclerViewAdapter mViewAdapter;
+    private ListView mListView;
+    private DataListAdapter mViewAdapter;
+    private ProgressBar mBar;
 
-    public FrgPlace() {
+
+    public FrgPostalCode() {
     }
 
 
-    public static FrgPlace newInstance() {
-        FrgPlace instance = new FrgPlace();
+    public static FrgPostalCode newInstance() {
+        FrgPostalCode instance = new FrgPostalCode();
         return instance;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.frg_place, container, false);
+        View v = inflater.inflate(R.layout.frg_postalcode, container, false);
 
-        mRecyclerView = v.findViewById(R.id.frg_place_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mBar = v.findViewById(R.id.bar_for_empty_list);
+        mBar.setVisibility(View.INVISIBLE);
+        mListView = v.findViewById(R.id.list_view);
 
         TextView textView = v.findViewById(R.id.msg_for_empty_list);
-        String text = String.format(getResources().getString(R.string.empty_list), getResources().getText(R.string.place_name));
+        String text = String.format(getResources().getString(R.string.empty_list), getResources().getText(R.string.postal_code));
         textView.setText(text);
 
         return v;
     }
 
     @Override
-    public void getListData(String query) {
-        mRecyclerView.setVisibility(View.VISIBLE);
-        Log.d(TAG, "getPlaceData: " + query);
+    public void getListData(String query){
+        mListView.setVisibility(View.VISIBLE);
+        Log.d(TAG, "getPlaceData for: " + query);
         IGetPostcrossingData codesList = RetrofitHelper.getInstance().create(IGetPostcrossingData.class);
-        Call<PostalCodesList> listCall = codesList.getDataByPlaceName(query);
+        Call<PostalCodesList> listCall = codesList.getByPostalCode(query);
         listCall.enqueue(new Callback<PostalCodesList>() {
             @Override
             public void onResponse(@NonNull Call<PostalCodesList> call, @NonNull Response<PostalCodesList> response) {
                 Log.d(RetrofitHelper.TAG, "got some result");
-                List<PostalCode> queryList = response.body().getPostalCodes();
-                if (getActivity() != null && queryList != null) {
-                    mViewAdapter = (RecyclerViewAdapter) mRecyclerView.getAdapter();
+
+                List<PostalCode> queryData = response.body().getPostalCodes();
+                if (getActivity() != null && queryData != null) {
+                    mViewAdapter = (DataListAdapter) mListView.getAdapter();
                     if (mViewAdapter == null) {
-                        mViewAdapter = new RecyclerViewAdapter(queryList);
-                        mRecyclerView.setAdapter(mViewAdapter);
+                        mViewAdapter = new DataListAdapter(mListView.getContext(), R.layout.simple_items_list, queryData);
+                        mListView.setAdapter(mViewAdapter);
                         return;
                     }
-                    mViewAdapter.setData(queryList);
+                    mViewAdapter.setCodes(queryData);
                 }
             }
 
@@ -85,4 +88,5 @@ public class FrgPlace extends BaseFragment {
             }
         });
     }
+
 }

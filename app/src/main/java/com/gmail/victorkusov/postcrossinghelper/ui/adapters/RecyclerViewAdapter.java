@@ -14,39 +14,39 @@ import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.DataViewHolder>{
 
-    List<PostalCode> data;
+    private List<PostalCode> queryData;
 
-    public void setData(List<PostalCode> data) {
-        this.data = data;
+    public void setData(List<PostalCode> queryData) {
+        this.queryData = queryData;
+        notifyDataSetChanged();
     }
 
-    public RecyclerViewAdapter(List<PostalCode> data) {
-        this.data = data;
+    public RecyclerViewAdapter(List<PostalCode> queryData) {
+        this.queryData = queryData;
     }
 
     @Override
     public DataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_items_list,parent,false);
-        DataViewHolder holder = new DataViewHolder(v);
-        return holder;
+        return new DataViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(DataViewHolder holder, int position) {
-        holder.bind(data.get(position));
+        holder.bind(queryData.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return queryData.size();
     }
 
     class DataViewHolder extends RecyclerView.ViewHolder{
 
         TextView mPlace, mPostalCode, mCountry;
 
-        public DataViewHolder(View itemView) {
+        DataViewHolder(View itemView) {
             super(itemView);
 
             mPlace = itemView.findViewById(R.id.recycler_item_place_name);
@@ -54,7 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mCountry = itemView.findViewById(R.id.recycler_item_country_code);
         }
 
-        public void bind(PostalCode postalCode) {
+        void bind(PostalCode postalCode) {
             mPlace.setText(postalCode.getPlace());
             mPostalCode.setText( "Postal code: " +  postalCode.getPostalCode());
             mCountry.setText("Country: " + postalCode.getCountryCode());

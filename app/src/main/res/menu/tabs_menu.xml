@@ -4,17 +4,14 @@
 
     <item
         android:id="@+id/menu_navigator_code"
-        android:title="@string/main_menu_code"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/main_menu_code"/>
 
     <item
         android:id="@+id/menu_navigator_place"
-        android:title="@string/main_menu_place"
-        app:showAsAction="ifRoom"/>
+        android:title="@string/main_menu_place"/>
 
     <item
-        android:id="@+id/menu_navigator_nearly_places"
-        android:title="@string/main_menu_nearly_places"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/menu_navigator_near_places"
+        android:title="@string/main_menu_nearly_places"/>
 
 </menu>

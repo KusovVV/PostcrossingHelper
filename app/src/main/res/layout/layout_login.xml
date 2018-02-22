@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context="com.gmail.victorkusov.postcrossinghelper.ui.MainActivity">
+    tools:context="com.gmail.victorkusov.postcrossinghelper.ui.activities.MainActivity">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/sign_container_email"
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="@dimen/buttons_padding"
         android:weightSum="100">
 
         <android.support.v7.widget.AppCompatButton
@@ -63,24 +63,21 @@
             android:layout_weight="20"
             android:text="@string/sign_btn_sign_in"
             android:textAllCaps="false"/>
-
     </LinearLayout>
-
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_btn_google"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="@dimen/google_margin_top"/>
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/sign_btn_facebook"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:text="asdsdfoirhroi"/>
+        android:layout_marginTop="@dimen/facebook_margin_top"/>
 
 
     <ProgressBar

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="facebook_margin_top">16dp</dimen>
+    <dimen name="google_margin_top">8dp</dimen>
+    <dimen name="buttons_padding">16dp</dimen>
+</resources>
