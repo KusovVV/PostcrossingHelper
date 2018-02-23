@@ -61,12 +61,11 @@ public class FrgPlace extends BaseFragment {
     public void getListData(String query) {
         mRecyclerView.setVisibility(View.VISIBLE);
         Log.d(TAG, "getPlaceData: " + query);
-        IGetPostcrossingData codesList = RetrofitHelper.getInstance().create(IGetPostcrossingData.class);
-        Call<PostalCodesList> listCall = codesList.getDataByPlaceName(query);
+        Call<PostalCodesList> listCall = RetrofitHelper.getInstance().getDataByPlaceName(query);
         listCall.enqueue(new Callback<PostalCodesList>() {
             @Override
             public void onResponse(@NonNull Call<PostalCodesList> call, @NonNull Response<PostalCodesList> response) {
-                Log.d(RetrofitHelper.TAG, "got some result");
+                Log.d(TAG, "got some result");
                 List<PostalCode> queryList = response.body().getPostalCodes();
                 if (getActivity() != null && queryList != null) {
                     mViewAdapter = (RecyclerViewAdapter) mRecyclerView.getAdapter();
@@ -81,7 +80,7 @@ public class FrgPlace extends BaseFragment {
 
             @Override
             public void onFailure(@NonNull Call<PostalCodesList> call, @NonNull Throwable t) {
-                Log.d(RetrofitHelper.TAG, t.getMessage());
+                Log.d(TAG, t.getMessage());
             }
         });
     }

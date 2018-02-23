@@ -1,6 +1,8 @@
 package com.gmail.victorkusov.postcrossinghelper.ui.fragments;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +22,7 @@ public abstract class BaseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            query = savedInstanceState.getString(KEY_QUERY);
+            query = savedInstanceState.getString(KEY_QUERY, "");
         }
     }
 
@@ -32,12 +34,13 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+
         outState.putString(KEY_QUERY, query);
+        super.onSaveInstanceState(outState);
     }
 
     public void refreshData() {
-        if (!query.isEmpty()) {
+        if (query != null && !query.isEmpty()) {
             getListData(query);
         }
     }
@@ -62,7 +65,6 @@ public abstract class BaseFragment extends Fragment {
     public void setQuery(String query) {
         this.query = query;
     }
-
 
 
 }

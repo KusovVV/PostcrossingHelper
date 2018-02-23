@@ -60,31 +60,30 @@ public class FrgPostalCode extends BaseFragment {
     }
 
     @Override
-    public void getListData(String query){
+    public void getListData(String query) {
         mListView.setVisibility(View.VISIBLE);
         Log.d(TAG, "getPlaceData for: " + query);
-        IGetPostcrossingData codesList = RetrofitHelper.getInstance().create(IGetPostcrossingData.class);
-        Call<PostalCodesList> listCall = codesList.getByPostalCode(query);
+        Call<PostalCodesList> listCall = RetrofitHelper.getInstance().getByPostalCode(query);
         listCall.enqueue(new Callback<PostalCodesList>() {
             @Override
             public void onResponse(@NonNull Call<PostalCodesList> call, @NonNull Response<PostalCodesList> response) {
-                Log.d(RetrofitHelper.TAG, "got some result");
+                Log.d(TAG, "got some result");
 
                 List<PostalCode> queryData = response.body().getPostalCodes();
                 if (getActivity() != null && queryData != null) {
                     mViewAdapter = (DataListAdapter) mListView.getAdapter();
                     if (mViewAdapter == null) {
-                        mViewAdapter = new DataListAdapter(mListView.getContext(), R.layout.simple_items_list, queryData);
+                        mViewAdapter = new DataListAdapter(queryData);
                         mListView.setAdapter(mViewAdapter);
                         return;
                     }
-                    mViewAdapter.setCodes(queryData);
+                    mViewAdapter.setPostalCodeList(queryData);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<PostalCodesList> call, @NonNull Throwable t) {
-                Log.d(RetrofitHelper.TAG, t.getMessage());
+                Log.d(TAG, t.getMessage());
             }
         });
     }

@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         // [FireBase instance]
+        // FIXME: 23.02.2018 convert to JAVADOC!
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         // [Setup Flipper]
@@ -128,13 +129,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCancel() {
                 Log.d(TAG, "Facebook signIn cancel");
-                mProgressBar.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "Facebook signIn Error");
-                mProgressBar.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -158,18 +159,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (view.getId()) {
             case R.id.sign_btn_email: {
+                // FIXME: 23.02.2018 очищать только пароль и выводить инфу, почему не прошла проверка
                 if (isDataValid()) {
                     AuthCredential credential = EmailAuthProvider.getCredential(email, password);
                     mFirebaseAuth.signInWithCredential(credential);
                 }
-                mProgressBar.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.GONE);
                 break;
             }
             case R.id.sign_btn_register: {
                 if (isDataValid()) {
                     createUserWithEmailPassword(email, password);
                 }
-                mProgressBar.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.GONE);
                 break;
             }
             case R.id.sign_btn_google: {
@@ -188,11 +190,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         password = mEditPassword.getText().toString();
         mEditEmail.setText("");
         mEditPassword.setText("");
-        return Utils.isEmailAndPasswordValid(email,password);
+        return Utils.isEmailAndPasswordValid(email, password);
     }
 
     private void createUserWithEmailPassword(final String email, final String password) {
 
+        // FIXME: 23.02.2018 выводи пользователю диалог с подтверждением регистрации
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -204,10 +207,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             loginWithCredential(credential);
                         } else {
                             // [Some problems with login]
+                            // FIXME: 23.02.2018 ознакомь пользователя
                             Log.d(TAG, "Creation with custom email is failed\n" + task.getException());
                             mEditEmail.setText("");
                             mEditPassword.setText("");
-                            mProgressBar.setVisibility(View.INVISIBLE);
+                            mProgressBar.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -219,10 +223,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "signInWithCredential:success");
-                    viewWorkspace();
+                    showWorkspace();
                 } else {
                     Log.d(TAG, "signInWithCredential:failure", task.getException());
-                    mProgressBar.setVisibility(View.INVISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -237,6 +241,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 try {
                     // Google Sign In was successful, authenticate with Firebase
+
+                    // FIXME: 23.02.2018 синхронный или ассинхронный вызов
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     Log.d(TAG, "firebaseAuthWithGoogle: success");
                     AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
@@ -252,8 +258,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // [Facebook callback]
         if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
-            super.onActivityResult(requestCode, resultCode, data);
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -261,6 +268,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onStart();
 
         if (!Utils.isConnected(this)) {
+
+            // FIXME: 23.02.2018 сделай, чтобы перепроверить соединение, не пришлось перезапускать приложение
             Toast.makeText(this, "Unable to connect! Check your network connection and try again", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -270,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void run() {
                     if (isSigned()) {
-                        viewWorkspace();
+                        showWorkspace();
                     }
                     mFlipper.showNext();
                 }
@@ -278,8 +287,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void viewWorkspace() {
+    private void showWorkspace() {
         Intent intent = new Intent(MainActivity.this, WorkScreenActivity.class);
+
+        // FIXME: 23.02.2018 зачем очищать?
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         MainActivity.this.finish();
@@ -304,12 +315,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        super.onSaveInstanceState(outState);
-
         outState.putString(KEY_EMAIL, mEditEmail.getText().toString());
         outState.putString(KEY_PASSWORD, mEditPassword.getText().toString());
         outState.putInt(KEY_VISIBILITY, mProgressBar.getVisibility());
         outState.putInt(KEY_LAYOUT, mFlipper.getDisplayedChild());
+
+        super.onSaveInstanceState(outState);
     }
 }
 

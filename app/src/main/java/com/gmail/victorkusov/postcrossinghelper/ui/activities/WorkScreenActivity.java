@@ -50,7 +50,9 @@ public class WorkScreenActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState != null) {
-            mItemId = savedInstanceState.getInt(KEY_FRAGMENT_ID);
+            if (savedInstanceState.containsKey(KEY_FRAGMENT_ID)) {
+                mItemId = savedInstanceState.getInt(KEY_FRAGMENT_ID);
+            }
         }
     }
 
@@ -60,15 +62,7 @@ public class WorkScreenActivity extends AppCompatActivity {
         mNavigationMenu.setSelectedItemId(mItemId);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     private void manageFragments(int itemId) {
-
-        BaseFragment fragment;
-
         switch (itemId) {
             case R.id.menu_navigator_code: {
                 frgTag = FrgPostalCode.TAG;
@@ -83,7 +77,7 @@ public class WorkScreenActivity extends AppCompatActivity {
                 break;
             }
         }
-        fragment = (BaseFragment) mFragmentManager.findFragmentByTag(frgTag);
+        BaseFragment fragment = (BaseFragment) mFragmentManager.findFragmentByTag(frgTag);
         if (fragment == null) {
             fragment = BaseFragment.newFragment(frgTag);
         }
@@ -122,8 +116,9 @@ public class WorkScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
+
         savedInstanceState.putInt(KEY_FRAGMENT_ID, mItemId);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override

@@ -11,9 +11,9 @@ import retrofit2.http.Query;
 public interface IGetPostcrossingData {
 
 
-    @GET("/postalCodeSearchJSON?username=Ostis")
+    @GET("/postalCodeSearchJSON")
     Call<PostalCodesList> getByPostalCode(@Query("postalcode") String postalCode);
 
-    @GET("/postalCodeSearchJSON?username=Ostis")
+    @GET("/postalCodeSearchJSON")
     Call<PostalCodesList> getDataByPlaceName(@Query("placename") String placeName);
 }
