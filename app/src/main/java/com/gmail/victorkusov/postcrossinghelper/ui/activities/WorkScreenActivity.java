@@ -1,6 +1,9 @@
 package com.gmail.victorkusov.postcrossinghelper.ui.activities;
 
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.gmail.victorkusov.postcrossinghelper.service.GeoService;
 import com.gmail.victorkusov.postcrossinghelper.R;
 import com.gmail.victorkusov.postcrossinghelper.ui.fragments.BaseFragment;
 import com.gmail.victorkusov.postcrossinghelper.ui.fragments.FrgNearPlaces;
@@ -30,6 +34,7 @@ public class WorkScreenActivity extends AppCompatActivity {
     private int mItemId = R.id.menu_navigator_code;
 
     private String frgTag = FrgPostalCode.TAG;
+    private SearchView mSearchView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +59,23 @@ public class WorkScreenActivity extends AppCompatActivity {
                 mItemId = savedInstanceState.getInt(KEY_FRAGMENT_ID);
             }
         }
+
+        if (!isServiceRunning(GeoService.class)) {
+            startService(new Intent(this, GeoService.class));
+        }
+
+    }
+
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager != null) {
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -89,8 +111,8 @@ public class WorkScreenActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.search_menu, menu);
         final MenuItem searchMenuItem = menu.findItem(R.id.action_search);
 
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        mSearchView = (SearchView) searchMenuItem.getActionView();
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "looking for " + query);

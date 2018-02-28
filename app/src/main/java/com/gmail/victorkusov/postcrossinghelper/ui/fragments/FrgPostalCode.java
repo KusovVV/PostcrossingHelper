@@ -1,6 +1,7 @@
 package com.gmail.victorkusov.postcrossinghelper.ui.fragments;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,12 +12,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.gmail.victorkusov.postcrossinghelper.ui.adapters.OnItemClickListener;
+import com.gmail.victorkusov.postcrossinghelper.Utils;
 import com.gmail.victorkusov.postcrossinghelper.model.PostalCode;
 import com.gmail.victorkusov.postcrossinghelper.ui.adapters.DataListAdapter;
-import com.gmail.victorkusov.postcrossinghelper.ui.network.IGetPostcrossingData;
 import com.gmail.victorkusov.postcrossinghelper.R;
-import com.gmail.victorkusov.postcrossinghelper.ui.network.RetrofitHelper;
+import com.gmail.victorkusov.postcrossinghelper.network.RetrofitHelper;
 import com.gmail.victorkusov.postcrossinghelper.model.PostalCodesList;
 
 import java.util.List;
@@ -52,6 +55,10 @@ public class FrgPostalCode extends BaseFragment {
         mBar.setVisibility(View.INVISIBLE);
         mListView = v.findViewById(R.id.list_view);
 
+        if (!Utils.hasNetworkConnection(v.getContext())) {
+            getDataFromRealm();
+        }
+
         TextView textView = v.findViewById(R.id.msg_for_empty_list);
         String text = String.format(getResources().getString(R.string.empty_list), getResources().getText(R.string.postal_code));
         textView.setText(text);
@@ -60,7 +67,24 @@ public class FrgPostalCode extends BaseFragment {
     }
 
     @Override
+    public void getDataFromRealm() {
+        mViewAdapter = (DataListAdapter) mListView.getAdapter();
+        if (mViewAdapter == null) {
+            mListView.setAdapter(new DataListAdapter(getPostalCodeListDataFromRealm(), new OnItemClickListener() {
+                @Override
+                public void onItemClick(PostalCode postalCode) {
+                    deleteEntry(postalCode);
+                }
+            }));
+        } else {
+            mViewAdapter.setPostalCodeList(getPostalCodeListDataFromRealm());
+        }
+        mListView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void getListData(String query) {
+
         mListView.setVisibility(View.VISIBLE);
         Log.d(TAG, "getPlaceData for: " + query);
         Call<PostalCodesList> listCall = RetrofitHelper.getInstance().getByPostalCode(query);
@@ -73,7 +97,7 @@ public class FrgPostalCode extends BaseFragment {
                 if (getActivity() != null && queryData != null) {
                     mViewAdapter = (DataListAdapter) mListView.getAdapter();
                     if (mViewAdapter == null) {
-                        mViewAdapter = new DataListAdapter(queryData);
+                        mViewAdapter = new DataListAdapter(queryData, getSaveRealmListener());
                         mListView.setAdapter(mViewAdapter);
                         return;
                     }
@@ -88,4 +112,16 @@ public class FrgPostalCode extends BaseFragment {
         });
     }
 
+    @Override
+    protected DialogInterface.OnClickListener getDialogDeleteListener(final PostalCode postalCode) {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(), TEXT_SAVED, Toast.LENGTH_SHORT).show();
+                deletePostalCodeFromRealm(postalCode);
+                mViewAdapter = (DataListAdapter) mListView.getAdapter();
+                mViewAdapter.setPostalCodeList(getPostalCodeListDataFromRealm());
+            }
+        };
+    }
 }

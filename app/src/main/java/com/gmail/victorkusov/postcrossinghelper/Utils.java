@@ -1,10 +1,14 @@
 package com.gmail.victorkusov.postcrossinghelper;
 
 
+import android.*;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -23,7 +27,7 @@ public class Utils {
         }
     }
 
-    public static boolean isConnected(Context context) {
+    public static boolean hasNetworkConnection(Context context) {
         boolean connected = true;
         ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (mConnectivityManager != null) {
@@ -38,5 +42,13 @@ public class Utils {
         }
         Matcher matcher = EMAIL_ADDRESS_REGEX.matcher(email);
         return matcher.find();
+    }
+
+    public static boolean isGPSPermissonEnabled(Context context) {
+        return ContextCompat.checkSelfPermission(context.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean isNetworkPermissonEnabled(Context context) {
+        return ContextCompat.checkSelfPermission(context.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 }

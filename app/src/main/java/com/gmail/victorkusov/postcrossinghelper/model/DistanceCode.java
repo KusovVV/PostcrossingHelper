@@ -3,10 +3,17 @@ package com.gmail.victorkusov.postcrossinghelper.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.UUID;
+
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 
-public class PostalCode extends RealmObject {
+public class DistanceCode extends RealmObject{
 
+    @Ignore
+    private UUID id;
+
+    @SerializedName("distance")private double distance;
     @SerializedName("adminName1") private String region;
     @SerializedName("adminName2") private String place;
     @SerializedName("adminName3") private String land;
@@ -15,6 +22,23 @@ public class PostalCode extends RealmObject {
     @SerializedName("lat") private double latitude;
     @SerializedName("lng") private double longitude;
     @SerializedName("ISO3166-2") private String iso;
+
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
 
     public String getRegion() {
         return region;
@@ -80,11 +104,12 @@ public class PostalCode extends RealmObject {
         this.iso = iso;
     }
 
-
     @Override
     public String toString() {
-        return "PostalCode{" +
-                "region='" + region + '\'' +
+        return "DistanceCode{" +
+                "id=" + id +
+                ", distance=" + distance +
+                ", region='" + region + '\'' +
                 ", place='" + place + '\'' +
                 ", land='" + land + '\'' +
                 ", postalCode='" + postalCode + '\'' +

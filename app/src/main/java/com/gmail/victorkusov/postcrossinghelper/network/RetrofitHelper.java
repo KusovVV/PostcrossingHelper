@@ -1,4 +1,4 @@
-package com.gmail.victorkusov.postcrossinghelper.ui.network;
+package com.gmail.victorkusov.postcrossinghelper.network;
 
 import android.support.annotation.NonNull;
 

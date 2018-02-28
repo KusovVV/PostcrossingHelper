@@ -20,5 +20,11 @@
 
     <string name="postal_code">postal code</string>
     <string name="place_name">place name</string>
+    <string name="btn_save">save note</string>
+
+    <string name="manage_item">Do you want to %1$s this note</string>
+
+    <string name="want_to_save">save</string>
+    <string name="want_to_delete">delete</string>
 
 </resources>

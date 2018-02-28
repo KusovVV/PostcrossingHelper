@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mProgressBar.setVisibility(savedInstanceState.getInt(KEY_VISIBILITY));
             mFlipper.setDisplayedChild(savedInstanceState.getInt(KEY_LAYOUT));
         }
+
     }
 
 
@@ -267,21 +268,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
 
-        if (!Utils.isConnected(this)) {
 
-            // FIXME: 23.02.2018 сделай, чтобы перепроверить соединение, не пришлось перезапускать приложение
-            Toast.makeText(this, "Unable to connect! Check your network connection and try again", Toast.LENGTH_SHORT).show();
-            return;
-        }
         // [Check Auth]
         if (mFlipper.getDisplayedChild() == 0) {
             mFlipper.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (isSigned()) {
+                    if (Utils.hasNetworkConnection(MainActivity.this)) {
+                        if (isSigned()) {
+                            showWorkspace();
+                        }
+                        mFlipper.showNext();
+                    } else {
                         showWorkspace();
                     }
-                    mFlipper.showNext();
                 }
             }, SCREEN_CHANGE_DURATION);
         }
