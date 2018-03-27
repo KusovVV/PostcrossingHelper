@@ -8,14 +8,13 @@ import java.util.UUID;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 
-public class DistanceCode extends RealmObject{
+public class DistanceCode{
 
-    @Ignore
-    private UUID id;
+    private int id;
 
     @SerializedName("distance")private double distance;
     @SerializedName("adminName1") private String region;
-    @SerializedName("adminName2") private String place;
+    @SerializedName("placeName") private String place;
     @SerializedName("adminName3") private String land;
     @SerializedName("postalCode") private String postalCode;
     @SerializedName("countryCode") private String countryCode;
@@ -24,11 +23,11 @@ public class DistanceCode extends RealmObject{
     @SerializedName("ISO3166-2") private String iso;
 
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(int id) {
         this.id = id;
     }
 

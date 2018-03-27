@@ -1,11 +1,13 @@
 package com.gmail.victorkusov.postcrossinghelper.ui.adapters;
 
 
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gmail.victorkusov.postcrossinghelper.R;
@@ -16,16 +18,16 @@ import java.util.List;
 public class DataListAdapter extends BaseAdapter {
 
     private List<PostalCode> mPostalCodeList;
-    private OnItemClickListener mListener;
+    private OnItemClickListener mClickListener;
 
-    public DataListAdapter(List<PostalCode> postalCodeList, OnItemClickListener listener) {
+    public void setPostalCodeList(List<PostalCode> postalCodeList, OnItemClickListener clickListener) {
         mPostalCodeList = postalCodeList;
-        mListener = listener;
+        mClickListener = clickListener;
+        notifyDataSetChanged();
     }
 
-    public void setPostalCodeList(List<PostalCode> postalCodeList) {
-        mPostalCodeList = postalCodeList;
-        notifyDataSetChanged();
+    public List<PostalCode> getPostalCodeList() {
+        return mPostalCodeList;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class DataListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public PostalCode getItem(int position) {
         return mPostalCodeList.get(position);
     }
 
@@ -44,7 +46,7 @@ public class DataListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         final ViewHolder holder;
 
         if (convertView == null) {
@@ -55,15 +57,30 @@ public class DataListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final PostalCode postalCode = (PostalCode) getItem(position);
-        holder.txtPlaceName.setText(postalCode.getPlace());
-        holder.txtPostalCode.setText("Postal code: " + postalCode.getPostalCode());
-        holder.txtCountryCode.setText("Conutry: " + postalCode.getCountryCode());
+        final PostalCode postalCode = getItem(position);
+        String postalCodeText = "Postal code: " + postalCode.getPostalCode();
+        String countryText = "Conutry: " + postalCode.getCountryCode();
 
-        holder.btnSave.setOnClickListener(new View.OnClickListener() {
+        holder.txtPlaceName.setText(postalCode.getPlace());
+        holder.txtPostalCode.setText(postalCodeText);
+        holder.txtCountryCode.setText(countryText);
+        holder.mButtonSave.setTag(position);
+
+        if(postalCode.isSavedToFirebase() != null) {
+            holder.mProgressBar.setVisibility(View.GONE);
+            holder.mButtonSave.setVisibility(View.VISIBLE);
+            holder.mButtonSave.setImageDrawable(postalCode.isSavedToFirebase() ?
+                    ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_delete_24dp) :
+                    ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_save_blue_24dp));
+        } else {
+            holder.mProgressBar.setVisibility(View.VISIBLE);
+            holder.mButtonSave.setVisibility(View.GONE);
+        }
+
+        holder.mButtonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onItemClick(postalCode);
+                mClickListener.onItemClick(position);
             }
         });
 
@@ -74,13 +91,15 @@ public class DataListAdapter extends BaseAdapter {
         private TextView txtPlaceName;
         private TextView txtPostalCode;
         private TextView txtCountryCode;
-        private ImageButton btnSave;
+        private ImageButton mButtonSave;
+        private ProgressBar mProgressBar;
 
         ViewHolder(View view) {
             txtPlaceName = view.findViewById(R.id.simple_item_place_name);
             txtPostalCode = view.findViewById(R.id.simple_item_postal_code);
             txtCountryCode = view.findViewById(R.id.simple_item_country_code);
-            btnSave = view.findViewById(R.id.button_save);
+            mButtonSave = view.findViewById(R.id.button_save);
+            mProgressBar = view.findViewById(R.id.button_save_loading);
         }
     }
 }

@@ -1,10 +1,12 @@
 package com.gmail.victorkusov.postcrossinghelper.ui.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,8 +22,9 @@ import com.facebook.FacebookException;
 import com.facebook.internal.CallbackManagerImpl;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.gmail.victorkusov.postcrossinghelper.utils.MessageDialog;
 import com.gmail.victorkusov.postcrossinghelper.R;
-import com.gmail.victorkusov.postcrossinghelper.Utils;
+import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -42,14 +45,16 @@ import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
     private static final String TAG = "LOG " + MainActivity.class.getSimpleName();
-    private static final long SCREEN_CHANGE_DURATION = TimeUnit.MILLISECONDS.toSeconds(1000);
+
+    private static final long SCREEN_CHANGE_DURATION = TimeUnit.SECONDS.toMillis(3);
+
     private static final String KEY_EMAIL = "email";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_VISIBILITY = "visibility";
     private static final String KEY_LAYOUT = "layout";
     private static final int RC_SIGN_IN = 101;
+    private static final String KEY_USER_NAME = "display_name";
 
     private EditText mEditEmail;
     private EditText mEditPassword;
@@ -70,7 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // [FireBase instance]
+
+//        [FireBase instance]
         // FIXME: 23.02.2018 convert to JAVADOC!
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -83,16 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mEditPassword = ((TextInputLayout) findViewById(R.id.sign_container_password)).getEditText();
         mProgressBar = findViewById(R.id.sign_progress);
 
-        // [add onClick listener to buttons]
         loginButton = findViewById(R.id.sign_btn_facebook);
-        loginButton.setOnClickListener(this);
-
         signInButton = findViewById(R.id.sign_btn_google);
-        signInButton.setOnClickListener(this);
-
-        (findViewById(R.id.sign_btn_email)).setOnClickListener(this);
-        (findViewById(R.id.sign_btn_register)).setOnClickListener(this);
-
 
         if (savedInstanceState != null) {
             mEditEmail.setText(savedInstanceState.getString(KEY_EMAIL));
@@ -155,12 +153,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        email = mEditEmail.getText().toString();
+        password = mEditPassword.getText().toString();
 
         mProgressBar.setVisibility(View.VISIBLE);
 
         switch (view.getId()) {
             case R.id.sign_btn_email: {
-                // FIXME: 23.02.2018 очищать только пароль и выводить инфу, почему не прошла проверка
                 if (isDataValid()) {
                     AuthCredential credential = EmailAuthProvider.getCredential(email, password);
                     mFirebaseAuth.signInWithCredential(credential);
@@ -169,10 +168,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.sign_btn_register: {
-                if (isDataValid()) {
-                    createUserWithEmailPassword(email, password);
-                }
-                mProgressBar.setVisibility(View.GONE);
+                AlertDialog.Builder dialog = MessageDialog.getDialog(MainActivity.this);
+                dialog.setTitle(R.string.dialog_confirm_registration);
+                dialog.setMessage(String.format(getResources().getString(R.string.dialog_reg_message), email));
+                dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (isDataValid()) {
+                            createUserWithEmailPassword(email, password);
+                        }
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                });
+                dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                });
+                dialog.show();
                 break;
             }
             case R.id.sign_btn_google: {
@@ -187,29 +201,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private boolean isDataValid() {
-        email = mEditEmail.getText().toString();
-        password = mEditPassword.getText().toString();
-        mEditEmail.setText("");
-        mEditPassword.setText("");
-        return Utils.isEmailAndPasswordValid(email, password);
+
+        if (!Utils.isEmailAndPasswordValid(email, password)) {
+            Toast.makeText(MainActivity.this, "Incorrect email or password", Toast.LENGTH_SHORT).show();
+            mEditPassword.setText("");
+            return false;
+        }
+        return true;
     }
 
     private void createUserWithEmailPassword(final String email, final String password) {
 
-        // FIXME: 23.02.2018 выводи пользователю диалог с подтверждением регистрации
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // [Success with login]
-                            Log.d(TAG, "Created with custom email");
+                            Toast.makeText(MainActivity.this, "Register successful", Toast.LENGTH_SHORT).show();
                             AuthCredential credential = EmailAuthProvider.getCredential(email, password);
                             loginWithCredential(credential);
                         } else {
                             // [Some problems with login]
-                            // FIXME: 23.02.2018 ознакомь пользователя
                             Log.d(TAG, "Creation with custom email is failed\n" + task.getException());
+                            Toast.makeText(MainActivity.this, "Register failed! Please try again", Toast.LENGTH_SHORT).show();
                             mEditEmail.setText("");
                             mEditPassword.setText("");
                             mProgressBar.setVisibility(View.GONE);
@@ -219,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void loginWithCredential(AuthCredential credential) {
+
         mFirebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -231,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+
     }
 
     @Override
@@ -243,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     // Google Sign In was successful, authenticate with Firebase
 
-                    // FIXME: 23.02.2018 синхронный или ассинхронный вызов
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     Log.d(TAG, "firebaseAuthWithGoogle: success");
                     AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
@@ -268,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
 
-
         // [Check Auth]
         if (mFlipper.getDisplayedChild() == 0) {
             mFlipper.postDelayed(new Runnable() {
@@ -278,20 +293,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (isSigned()) {
                             showWorkspace();
                         }
+                        addListenersToButtons();
                         mFlipper.showNext();
                     } else {
                         showWorkspace();
                     }
                 }
             }, SCREEN_CHANGE_DURATION);
+        } else {
+            addListenersToButtons();
         }
+    }
+
+    private void addListenersToButtons() {
+        // [add onClick listener to buttons]
+        loginButton.setOnClickListener(MainActivity.this);
+        signInButton.setOnClickListener(MainActivity.this);
+        (findViewById(R.id.sign_btn_email)).setOnClickListener(MainActivity.this);
+        (findViewById(R.id.sign_btn_register)).setOnClickListener(MainActivity.this);
     }
 
     private void showWorkspace() {
         Intent intent = new Intent(MainActivity.this, WorkScreenActivity.class);
 
-        // FIXME: 23.02.2018 зачем очищать?
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+        if (user != null) {
+            String displayName = user.getDisplayName();
+            intent.putExtra(KEY_USER_NAME, displayName);
+        }
         startActivity(intent);
         MainActivity.this.finish();
     }

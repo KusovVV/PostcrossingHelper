@@ -9,22 +9,22 @@ import java.util.List;
 
 import io.realm.Realm;
 
-public class PostalCodesList implements IListRealmSaving {
+public class PlaceList implements IListRealmSaving {
 
     @SerializedName("postalCodes")
-    private List<PostalCode> mPostalCodes;
+    private List<Place> mPlaces;
 
-    public List<PostalCode> getPostalCodes() {
-        return mPostalCodes;
+    public List<Place> getPlaces() {
+        return mPlaces;
     }
 
     @Override
     public void saveListToRealm() {
-       Realm realm = RealmDBHelper.getInstance().getRealm();
+        Realm realm = RealmDBHelper.getInstance().getRealm();
         realm.beginTransaction();
-        realm.delete(RealmPostalCode.class);
-        for (PostalCode postalCode : mPostalCodes) {
-            RealmPostalCode code = new RealmPostalCode(postalCode);
+        realm.delete(RealmPlace.class);
+        for (Place place : mPlaces) {
+            RealmPlace code = new RealmPlace(place);
             realm.copyToRealm(code);
         }
         realm.commitTransaction();
@@ -33,18 +33,17 @@ public class PostalCodesList implements IListRealmSaving {
     @Override
     public void getListFromRealm() {
         Realm realm = RealmDBHelper.getInstance().getRealm();
-
         realm.beginTransaction();
-        List<RealmPostalCode> listData = realm.where(RealmPostalCode.class).findAll();
+        List<RealmPlace> listData = realm.where(RealmPlace.class).findAll();
         realm.commitTransaction();
 
-        if(mPostalCodes == null) {
-            mPostalCodes = new ArrayList<>();
+        if(mPlaces == null) {
+            mPlaces = new ArrayList<>();
         }
-        mPostalCodes.clear();
-        for (RealmPostalCode code : listData) {
-            PostalCode item = new PostalCode(code);
-            mPostalCodes.add(item);
+        mPlaces.clear();
+        for (RealmPlace code : listData) {
+            Place item = new Place(code);
+            mPlaces.add(item);
         }
     }
 }

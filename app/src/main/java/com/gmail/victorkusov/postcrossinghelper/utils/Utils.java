@@ -1,8 +1,9 @@
-package com.gmail.victorkusov.postcrossinghelper;
+package com.gmail.victorkusov.postcrossinghelper.utils;
 
 
 import android.*;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -20,7 +21,7 @@ public class Utils {
 
     private static final Pattern EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
-    public static void hideKeyboard(View view){
+    public static void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) view.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (inputMethodManager != null && inputMethodManager.isAcceptingText()) {
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -51,4 +52,5 @@ public class Utils {
     public static boolean isNetworkPermissonEnabled(Context context) {
         return ContextCompat.checkSelfPermission(context.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
+
 }

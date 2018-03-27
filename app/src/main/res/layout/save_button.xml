@@ -12,6 +12,15 @@
         android:contentDescription="@string/btn_save"
         android:minHeight="48dp"
         android:minWidth="48dp"
-        android:src="@drawable/ic_save_blue_24dp"/>
+        android:src="@drawable/ic_save_blue_24dp"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/button_save_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:visibility="visible"/>
+
 
 </merge>

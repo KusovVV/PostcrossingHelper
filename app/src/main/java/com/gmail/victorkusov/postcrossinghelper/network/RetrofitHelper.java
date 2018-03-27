@@ -18,6 +18,7 @@ public class RetrofitHelper {
 
     private static final String USERNAME = "username";
     private static final String VALUE = "Ostis";
+    private static final String BASE_URL = "http://api.geonames.org";
 
     private static IGetPostcrossingData sPostcrossingData;
 
@@ -36,15 +37,15 @@ public class RetrofitHelper {
                     }
                 }).build();
 
-        Retrofit buider = new Retrofit.Builder()
-                .baseUrl("http://api.geonames.org")
+        Retrofit builder = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder()
                         .setLenient()
                         .create()))
                 .client(client)
                 .build();
 
-        sPostcrossingData = buider.create(IGetPostcrossingData.class);
+        sPostcrossingData = builder.create(IGetPostcrossingData.class);
     }
 
     public static synchronized IGetPostcrossingData getInstance() {

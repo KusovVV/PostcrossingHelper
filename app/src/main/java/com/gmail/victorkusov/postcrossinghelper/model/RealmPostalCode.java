@@ -1,40 +1,29 @@
 package com.gmail.victorkusov.postcrossinghelper.model;
 
 
-import com.gmail.victorkusov.postcrossinghelper.model.interfaces.IFirebaseNotes;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.annotations.SerializedName;
+import com.gmail.victorkusov.postcrossinghelper.database.RealmDBHelper;
 
-import io.realm.annotations.Ignore;
+import io.realm.Realm;
+import io.realm.RealmObject;
 
 
-public class PostalCode implements IFirebaseNotes {
+public class RealmPostalCode extends RealmObject{
 
-    @SerializedName("adminName1")
     private String region;
-    @SerializedName("placeName")
     private String place;
-    @SerializedName("adminName3")
     private String land;
-    @SerializedName("postalCode")
     private String postalCode;
-    @SerializedName("countryCode")
     private String countryCode;
-    @SerializedName("lat")
     private double latitude;
-    @SerializedName("lng")
     private double longitude;
-    @SerializedName("ISO3166-2")
     private String iso;
 
-    @Ignore
-    private Boolean isSavedToFirebase;
+    private boolean isSavedToFirebase;
 
-    public PostalCode() {
+    public RealmPostalCode() {
     }
 
-    public PostalCode(RealmPostalCode code) {
+    public RealmPostalCode(PostalCode code){
         region = code.getRegion();
         place = code.getPlace();
         land = code.getLand();
@@ -43,14 +32,15 @@ public class PostalCode implements IFirebaseNotes {
         latitude = code.getLatitude();
         longitude = code.getLongitude();
         iso = code.getIso();
+        isSavedToFirebase = true;
     }
 
-    public Boolean isSavedToFirebase() {
+    public boolean isSavedToFirebase() {
         return isSavedToFirebase;
     }
 
-    public void setIsSavedToFirebase(Boolean isSaved) {
-        isSavedToFirebase = isSaved;
+    public void setIsSavedToRealm(boolean deleteIcon) {
+        isSavedToFirebase = deleteIcon;
     }
 
     public String getRegion() {
@@ -130,18 +120,6 @@ public class PostalCode implements IFirebaseNotes {
                 ", longitude=" + longitude +
                 ", iso='" + iso + '\'' +
                 '}';
-    }
-
-    @Override
-    public void addNoteToFirebase() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        reference.child(ModelConstants.TABLE_NAME_POSTALCODE).child(postalCode).setValue(this);
-    }
-
-    @Override
-    public void deleteNoteFromFirebase() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        reference.child(ModelConstants.TABLE_NAME_POSTALCODE).child(postalCode).setValue(null);
     }
 
 }
