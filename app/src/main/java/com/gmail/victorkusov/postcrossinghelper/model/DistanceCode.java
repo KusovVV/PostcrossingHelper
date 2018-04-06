@@ -3,12 +3,7 @@ package com.gmail.victorkusov.postcrossinghelper.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.UUID;
-
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-
-public class DistanceCode{
+public class DistanceCode {
 
     private int id;
 
@@ -22,6 +17,7 @@ public class DistanceCode{
     @SerializedName("lng") private double longitude;
     @SerializedName("ISO3166-2") private String iso;
 
+    public DistanceCode(){}
 
     public int getId() {
         return id;

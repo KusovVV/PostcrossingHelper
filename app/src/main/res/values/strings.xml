@@ -16,7 +16,6 @@
 
 
 <string name="empty_list">To add information use search menu button \n enter %1$s</string>
-<!--<string name="empty_place">To add information use search menu button \n enter place name</string>-->
 
     <string name="postal_code">postal code</string>
     <string name="place_name">place name</string>
@@ -43,7 +42,12 @@
     <string name="dialog_confirm_registration">Confirm registration</string>
     <string name="dialog_reg_message">Register %1$s</string>
     <string name="permission_location">This permission uses to get your Location. Please enable it next time</string>
+    <string name="permission_files">Cannot export file</string>
     <string name="widget_btn_prev">previous</string>
     <string name="widget_btn_next">next</string>
     <string name="distance">distance</string>
+    <string name="dialog_permission_service_title">Location service</string>
+    <string name="dialog_permission_service_message">The permission allows your application to connect to service wich provides user location</string>
+    <string name="dialog_track_btn_export">Export</string>
+    <string name="navigator_track_share_report">send to</string>
 </resources>

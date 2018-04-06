@@ -2,12 +2,15 @@ package com.gmail.victorkusov.postcrossinghelper.ui.fragments;
 
 
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -19,10 +22,13 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.gmail.victorkusov.postcrossinghelper.network.INewDataNotify;
+import com.gmail.victorkusov.postcrossinghelper.network.ResponseHandler;
 import com.gmail.victorkusov.postcrossinghelper.database.PostalCodeProvider;
 import com.gmail.victorkusov.postcrossinghelper.model.DistanceCode;
-import com.gmail.victorkusov.postcrossinghelper.service.LocalGeoService;
+import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,27 +37,15 @@ public class FrgNearPlaces extends BaseFragment {
     public static final String TAG = "LOG " + FrgNearPlaces.class.getSimpleName();
     public static final int TEXT_SIZE_NORMAL = 18;
     public static final int TEXT_SIZE_SMALL = 12;
-    private ScrollView mRootScrollView;
-    private LocalGeoService mService;
-
-    private boolean hasBounded;
+    private static final int REQUEST_FOR_UPDATE = 1;
 
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LocalGeoService.LocalBinder binder = (LocalGeoService.LocalBinder) service;
-            mService = binder.getService();
-            hasBounded = true;
+    private static final String GEO_SERVICE_ACTION = "com.gmail.victorkusov.diffprocess.ServiceFromAnotherApp";
+    private static final String GEO_SERVICE_PACKAGE = "com.gmail.victorkusov.diffprocess";
+    private LinearLayout mContainerLayout;
 
-            addElementsToContainerLayout();
-        }
+    private List<List<TextView>> mViews = new ArrayList<>();
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            hasBounded = false;
-        }
-    };
 
     public FrgNearPlaces() {
     }
@@ -65,87 +59,135 @@ public class FrgNearPlaces extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Context context = inflater.getContext();
-        mRootScrollView = new ScrollView(context);
+        ScrollView rootScrollView = new ScrollView(getContext());
+        mContainerLayout = new LinearLayout(getContext());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams
+                (LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        mContainerLayout.setLayoutParams(layoutParams);
+        mContainerLayout.setOrientation(LinearLayout.VERTICAL);
+        rootScrollView.addView(mContainerLayout);
 
-        return mRootScrollView;
+        return rootScrollView;
     }
+
+    private ContentObserver mObserver = new ContentObserver(null) {
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            Log.d(TAG, "onChange: data changed");
+            Context context = getContext();
+            if (context != null) {
+                bindToGeoService(context);
+            }
+        }
+    };
 
     @Override
     public void onStart() {
         super.onStart();
         Context context = getContext();
         if (context != null) {
-            context.bindService(new Intent(context, LocalGeoService.class), mConnection, Context.BIND_AUTO_CREATE);
+            context.getContentResolver().registerContentObserver(PostalCodeProvider.CONTENT_URI, false, mObserver);
+            Utils.startGeoService(context);
         }
     }
 
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected: ");
+            Messenger messenger = new Messenger(service);
+            Message msg = Message.obtain(null, REQUEST_FOR_UPDATE);
+            msg.replyTo = new Messenger(new ResponseHandler(new INewDataNotify() {
+                @Override
+                public void dataNotify(List<DistanceCode> dataList) {
+                    addElementsToContainerLayout(dataList);
+                    Log.d(TAG, "dataNotify: data notified");
+                }
+            }));
+            try {
+                messenger.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected: ");
+        }
+    };
+
+    private void bindToGeoService(Context context) {
+        Intent intent = new Intent(GEO_SERVICE_ACTION);
+        intent.setPackage(GEO_SERVICE_PACKAGE);
+        context.bindService(intent, mServiceConnection, Context.BIND_ABOVE_CLIENT);
+    }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        if (hasBounded) {
-            Context context = getContext();
-            if (context != null) {
-                context.unbindService(mConnection);
+        Context context = getContext();
+        if (context != null) {
+            context.getContentResolver().unregisterContentObserver(mObserver);
+            if (mServiceConnection != null) {
+                context.unbindService(mServiceConnection);
             }
         }
     }
 
-    private void addElementsToContainerLayout() {
+    private void addElementsToContainerLayout(List<DistanceCode> dataList) {
 
-        LinearLayout containerLayout = new LinearLayout(mRootScrollView.getContext());
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams
-                (LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        containerLayout.setLayoutParams(layoutParams);
-        containerLayout.setOrientation(LinearLayout.VERTICAL);
-        mRootScrollView.addView(containerLayout);
+        if (dataList != null) {
+            Context context = getContext();
 
-//        List<DistanceCode> dataQuery = getDataFromService();
-        List<DistanceCode> dataQuery = getQueryFromSQLiteDatabase();
+            int size = dataList.size();
+            mViews.clear();
+            Log.d(TAG, "Add elements. Rows:" + size);
+            for (DistanceCode code : dataList) {
 
-        if (dataQuery != null) {
-            Log.d(TAG, "Add elements. Rows:" + dataQuery.size());
+                List<TextView> textViews = new ArrayList<>(3);
 
-            for (DistanceCode code : dataQuery) {
-
-                TextView title = new TextView(containerLayout.getContext());
+                TextView title = new TextView(context);
                 title.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE_NORMAL);
                 title.setText(code.getPostalCode());
-                containerLayout.addView(title);
+                textViews.add(title);
 
-                TextView body = new TextView(containerLayout.getContext());
+                TextView body = new TextView(context);
                 body.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE_SMALL);
                 String bodyText = String.format(Locale.getDefault(), "%s, %s", code.getPlace(), code.getCountryCode());
                 body.setText(bodyText);
-                containerLayout.addView(body);
+                textViews.add(body);
 
-                TextView distance = new TextView(containerLayout.getContext());
+                TextView distance = new TextView(context);
                 String distanceText = String.format(Locale.getDefault(), "distance: %f", code.getDistance());
                 distance.setText(distanceText);
-                containerLayout.addView(distance);
+                textViews.add(distance);
 
+                mViews.add(textViews);
+            }
 
-                Log.d(TAG, "addElementsToContainerLayout: id:"+code.getId());
+            mContainerLayout.removeAllViewsInLayout();
+            for (List<TextView> views : mViews) {
+                for (TextView view : views) {
+                    mContainerLayout.addView(view);
+                }
             }
         }
     }
 
-    private List<DistanceCode> getDataFromService() {
-        return mService.getDistanceCodeData();
-    }
-
-    private List<DistanceCode> getQueryFromSQLiteDatabase() {
-        Context context = getActivity();
-        if (context != null) {
-            ContentResolver contentResolver = context.getContentResolver();
-            if (contentResolver != null) {
-                return PostalCodeProvider.getDisplayedData(context);
-            }
-        }
-        return null;
-    }
+//    private List<DistanceCode> getQueryFromSQLiteDatabase() {
+//        Context context = getActivity();
+//        if (context != null) {
+//            ContentResolver contentResolver = context.getContentResolver();
+//            if (contentResolver != null) {
+//                return PostalCodeProvider.getDisplayedData(context);
+//            }
+//        }
+//        return null;
+//    }
 
 
     @Override

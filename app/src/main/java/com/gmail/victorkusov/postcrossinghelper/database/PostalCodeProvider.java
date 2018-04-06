@@ -46,7 +46,6 @@ public class PostalCodeProvider extends ContentProvider {
     }
 
 
-
     private static final String DB_NAME = "NearbyPlaces";
     private static final int DB_VERSION = 3;
 
@@ -104,7 +103,7 @@ public class PostalCodeProvider extends ContentProvider {
                 return TABLE_PLACES_FIELD_ID + "=" + uri.getLastPathSegment();
             }
             default: {
-                throw new IllegalArgumentException("Wrong uri:" + uri + "\n" + MATCHER.match(uri) +" instead: " + MATCHER_POSTAL_CODES + " or " + MATCHER_POSTAL_CODE_ITEM_ID);
+                throw new IllegalArgumentException("Wrong uri:" + uri + "\n" + MATCHER.match(uri) + " instead: " + MATCHER_POSTAL_CODES + " or " + MATCHER_POSTAL_CODE_ITEM_ID);
             }
         }
     }
@@ -131,7 +130,6 @@ public class PostalCodeProvider extends ContentProvider {
         db = helper.getWritableDatabase();
         Long rowId = db.insert(TABLE_NAME, null, values);
         uri = ContentUris.withAppendedId(CONTENT_URI, rowId);
-
         //Log.d(TAG, "insert: rowId:" + rowId);
         return uri;
     }
@@ -191,7 +189,6 @@ public class PostalCodeProvider extends ContentProvider {
 
 
     private class PostalDBHelper extends SQLiteOpenHelper {
-
 
 
         private PostalDBHelper(Context context) {

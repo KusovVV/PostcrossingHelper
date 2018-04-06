@@ -1,10 +1,18 @@
 package com.gmail.victorkusov.postcrossinghelper.ui.activities;
 
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -18,24 +26,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gmail.victorkusov.postcrossinghelper.network.ICompleteParseDataListener;
-import com.gmail.victorkusov.postcrossinghelper.model.InputData;
-import com.gmail.victorkusov.postcrossinghelper.network.ParseThread;
 import com.gmail.victorkusov.postcrossinghelper.R;
-import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
-import com.gmail.victorkusov.postcrossinghelper.service.LocalGeoService;
+import com.gmail.victorkusov.postcrossinghelper.model.InputData;
+import com.gmail.victorkusov.postcrossinghelper.network.ICompleteParseDataListener;
+import com.gmail.victorkusov.postcrossinghelper.network.ParseThread;
 import com.gmail.victorkusov.postcrossinghelper.ui.adapters.TrackCodeAdapter;
 import com.gmail.victorkusov.postcrossinghelper.ui.fragments.BaseFragment;
 import com.gmail.victorkusov.postcrossinghelper.ui.fragments.FrgNearPlaces;
 import com.gmail.victorkusov.postcrossinghelper.ui.fragments.FrgPlace;
 import com.gmail.victorkusov.postcrossinghelper.ui.fragments.FrgPostalCode;
+import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -44,8 +55,10 @@ public class WorkScreenActivity extends AppCompatActivity {
     private static final String TAG = "Log " + WorkScreenActivity.class.getSimpleName();
     private static final java.lang.String KEY_FRAGMENT_ID = "fragmentTag";
     private static final String KEY_USER_NAME = "display_name";
-    private static final int GRANTED = 111;
     public static final String CONNECTION_LOST_MESSAGE = "Network is unable! Please check your network connection and try again";
+    public static final String[] GEO_SERVICE_PERMISSIONS = {"com.gmail.victorkusov.diffprocess.START_INNER_SERVICE"};
+    private static final int GEO_SERVICE_PERMISSION_REQUEST = 578;
+
 
     private BottomNavigationView mNavigationMenu;
     private FragmentManager mFragmentManager;
@@ -113,7 +126,6 @@ public class WorkScreenActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
                 switch (item.getItemId()) {
                     case R.id.navigation_item_logout: {
                         mFirebaseAuth.signOut();
@@ -131,10 +143,8 @@ public class WorkScreenActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.navigation_track_code: {
-
-                        Dialog dialog = getMessageDialog();
-
-                        dialog.show();
+                        startActivity(new Intent(WorkScreenActivity.this, TrackCodeActivity.class));
+                        break;
                     }
                 }
                 mDrawerLayout.closeDrawers();
@@ -149,57 +159,29 @@ public class WorkScreenActivity extends AppCompatActivity {
             }
         }
 
-        if (!Utils.isNetworkPermissonEnabled(this)) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, GRANTED);
+        if (Utils.isGeoServicePermissonEnabled(this)) {
+            Utils.startGeoService(WorkScreenActivity.this);
         } else {
-            startService(new Intent(this, LocalGeoService.class));
+            requestForGeoServicePermission();
         }
     }
 
-    private Dialog getMessageDialog() {
-        final Dialog dialog = new Dialog(WorkScreenActivity.this);
-        dialog.setContentView(R.layout.dialog_track_code);
-        dialog.setTitle("Title !!!!");
-
-        mTrackCodeListView = dialog.findViewById(R.id.dialog_track_list_results);
-
-        dialog.findViewById(R.id.dialog_track_btn_track).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String trackCode = ((EditText) dialog.findViewById(R.id.dialog_track_edit_track)).getText().toString();
-
-                // insert work with jsoup
-                getTrackCodeListResults(trackCode);
-            }
-        });
-
-        return dialog;
-    }
-
-    private void getTrackCodeListResults(String trackCode) {
-
-        ParseThread thread = new ParseThread(trackCode, new ICompleteParseDataListener() {
-            @Override
-            public void onDataReady(final List<InputData> dataList) {
-                WorkScreenActivity.this.runOnUiThread(new Runnable() {
+    private void requestForGeoServicePermission() {
+        new AlertDialog.Builder(WorkScreenActivity.this)
+                .setTitle(R.string.dialog_permission_service_title)
+                .setMessage(R.string.dialog_permission_service_message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void run() {
-                        //make adapter
-                        TrackCodeAdapter adapter = (TrackCodeAdapter) mTrackCodeListView.getAdapter();
-                        if (adapter == null) {
-                            adapter = new TrackCodeAdapter();
-                            adapter.setDataList(dataList);
-                            mTrackCodeListView.setAdapter(adapter);
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (Utils.isGeoServicePermissonEnabled(WorkScreenActivity.this)) {
+                            Utils.startGeoService(WorkScreenActivity.this);
                         } else {
-                            adapter.setDataList(dataList);
+                            ActivityCompat.requestPermissions(WorkScreenActivity.this,
+                                    GEO_SERVICE_PERMISSIONS, GEO_SERVICE_PERMISSION_REQUEST);
                         }
-                        }
-                    });
-                }
-            });
-        thread.start();
-        }
-
+                    }
+                }).show();
+    }
 
     private String getTittleToDrawerField() {
         BaseFragment fragment = (BaseFragment) mFragmentManager.findFragmentByTag(frgTag);
@@ -210,14 +192,15 @@ public class WorkScreenActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == GRANTED) {
+        if (requestCode == GEO_SERVICE_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startService(new Intent(this, LocalGeoService.class));
+                Utils.startGeoService(WorkScreenActivity.this);
             } else {
                 Toast.makeText(this, R.string.permission_location, Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
     @Override
     protected void onStart() {

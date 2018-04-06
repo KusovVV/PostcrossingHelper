@@ -7,6 +7,7 @@
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_contact_mail_black_24dp"/>
+        android:padding="8dp"
+        android:src="@drawable/postcrossing_logo"/>
 
 </LinearLayout>

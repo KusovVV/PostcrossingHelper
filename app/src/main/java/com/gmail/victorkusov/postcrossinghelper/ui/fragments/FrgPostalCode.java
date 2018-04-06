@@ -24,7 +24,7 @@ import com.gmail.victorkusov.postcrossinghelper.ui.adapters.OnItemClickListener;
 import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
 import com.gmail.victorkusov.postcrossinghelper.ui.adapters.DataListAdapter;
 import com.gmail.victorkusov.postcrossinghelper.R;
-import com.gmail.victorkusov.postcrossinghelper.network.RetrofitHelper;
+import com.gmail.victorkusov.postcrossinghelper.network.retrofit.RetrofitHelper;
 import com.gmail.victorkusov.postcrossinghelper.model.PostalCodesList;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -161,8 +161,6 @@ public class FrgPostalCode extends BaseFragment {
 
                         if (getActivity() != null) {
                             makeAdapter(queryData);
-
-//                            RealmDBHelper.getInstance().savePostalCodeListToRealm(queryData);
                             body.saveListToRealm();
                         }
                     }
@@ -206,7 +204,7 @@ public class FrgPostalCode extends BaseFragment {
 
         final Context context = getContext();
         // get dialog reference
-        AlertDialog.Builder dialog = MessageDialog.getDialog(context);
+        AlertDialog.Builder dialog;
 
         //get managed element
         final PostalCode postalCode = mViewAdapter.getItem(position);
@@ -214,44 +212,48 @@ public class FrgPostalCode extends BaseFragment {
         //[Make title]
         String titleMessage = null;
         if (context != null) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                dialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                dialog = new AlertDialog.Builder(context, android.R.style.TextAppearance_Theme_Dialog);
+            }
             Resources resources = context.getResources();
             if (resources != null) {
                 titleMessage = String.format(resources.getString(R.string.manage_item),
                         resources.getString(postalCode.isSavedToFirebase() ? R.string.want_to_delete : R.string.want_to_save));
             }
-        }
-        dialog.setTitle(titleMessage).setMessage(postalCode.getPostalCode() + " " + postalCode.getPlace());
 
-        //[Set buttons]
-        dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+            dialog.setTitle(titleMessage).setMessage(postalCode.getPostalCode() + " " + postalCode.getPlace());
 
-                if (!postalCode.isSavedToFirebase()) {
-                    Toast.makeText(context, "save element #" + position, Toast.LENGTH_SHORT).show();
-                    postalCode.setIsSavedToFirebase(true);
-                    postalCode.addNoteToFirebase();
-                    mViewAdapter.notifyDataSetChanged();
-                } else {
-                    try {
-                        postalCode.deleteNoteFromFirebase();
-                        postalCode.setIsSavedToFirebase(false);
+            //[Set buttons]
+            dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    if (!postalCode.isSavedToFirebase()) {
+                        Toast.makeText(context, "save element #" + position, Toast.LENGTH_SHORT).show();
+                        postalCode.setIsSavedToFirebase(true);
+                        postalCode.addNoteToFirebase();
                         mViewAdapter.notifyDataSetChanged();
-                    } catch (Exception ignored) {
+                    } else {
+                        try {
+                            postalCode.deleteNoteFromFirebase();
+                            postalCode.setIsSavedToFirebase(false);
+                            mViewAdapter.notifyDataSetChanged();
+                        } catch (Exception ignored) {
+                        }
                     }
+                    clrElemPosition();
                 }
-                clrElemPosition();
-            }
-        });
-        dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                clrElemPosition();
-            }
-        });
+            });
+            dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    clrElemPosition();
+                }
+            });
 
-        dialog.show();
+            dialog.show();
+        }
     }
-
-
 }

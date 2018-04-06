@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -168,7 +169,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.sign_btn_register: {
-                AlertDialog.Builder dialog = MessageDialog.getDialog(MainActivity.this);
+                AlertDialog.Builder dialog;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    dialog = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+                } else {
+                    dialog = new AlertDialog.Builder(MainActivity.this, android.R.style.TextAppearance_Theme_Dialog);
+                }
                 dialog.setTitle(R.string.dialog_confirm_registration);
                 dialog.setMessage(String.format(getResources().getString(R.string.dialog_reg_message), email));
                 dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

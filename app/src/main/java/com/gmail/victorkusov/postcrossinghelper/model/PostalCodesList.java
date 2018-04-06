@@ -20,7 +20,7 @@ public class PostalCodesList implements IListRealmSaving {
 
     @Override
     public void saveListToRealm() {
-       Realm realm = RealmDBHelper.getInstance().getRealm();
+        Realm realm = RealmDBHelper.getInstance().getRealm();
         realm.beginTransaction();
         realm.delete(RealmPostalCode.class);
         for (PostalCode postalCode : mPostalCodes) {
@@ -38,7 +38,7 @@ public class PostalCodesList implements IListRealmSaving {
         List<RealmPostalCode> listData = realm.where(RealmPostalCode.class).findAll();
         realm.commitTransaction();
 
-        if(mPostalCodes == null) {
+        if (mPostalCodes == null) {
             mPostalCodes = new ArrayList<>();
         }
         mPostalCodes.clear();

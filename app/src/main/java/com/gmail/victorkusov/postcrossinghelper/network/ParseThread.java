@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseThread extends Thread{
+public class ParseThread extends Thread {
     private static final String URL_ADDRESS = "https://webservices.belpost.by/searchRu/";
 
     private ICompleteParseDataListener mHandler;
@@ -31,32 +31,38 @@ public class ParseThread extends Thread{
             Document document = Jsoup.connect(url).get();
 
             List<InputData> dataList = new ArrayList<>();
-
+            int rowsCount;
             Element table = document.getElementById("GridInfo");
-            Elements row = table.select("tr");
+            if (table != null) {
+                Elements row = table.select("tr");
+                if (row != null) {
+                    rowsCount = row.size();
+                    for (int i = 1; i < rowsCount; i++) {
+                        Elements ths = row.get(i).select("td");
 
-            int size = row.size();
-            for (int i = 1; i < size; i++) {
-                Elements ths = row.get(i).select("td");
-
-                InputData inputData = new InputData();
-                inputData.setDateTime(ths.get(0).text());
-                inputData.setEvent(ths.get(1).text());
-                inputData.setPlace(ths.get(2).text());
-                dataList.add(inputData);
+                        InputData inputData = new InputData();
+                        inputData.setDateTime(ths.get(0).text());
+                        inputData.setEvent(ths.get(1).text());
+                        inputData.setPlace(ths.get(2).text());
+                        dataList.add(inputData);
+                    }
+                }
             }
 
             table = document.getElementById("GridInfo0");
-            row = table.select("tr");
+            if (table != null) {
+                Elements row = table.select("tr");
+                if (row != null) {
+                    rowsCount = row.size();
+                    for (int i = 1; i < rowsCount; i++) {
+                        Elements ths = row.get(i).select("td");
 
-            size = row.size();
-            for (int i = 1; i < size; i++) {
-                Elements ths = row.get(i).select("td");
-
-                InputData inputData = new InputData();
-                inputData.setDateTime(ths.get(0).text());
-                inputData.setEvent(ths.get(1).text());
-                dataList.add(inputData);
+                        InputData inputData = new InputData();
+                        inputData.setDateTime(ths.get(0).text());
+                        inputData.setEvent(ths.get(1).text());
+                        dataList.add(inputData);
+                    }
+                }
             }
             mHandler.onDataReady(dataList);
         } catch (IOException e) {

@@ -21,6 +21,10 @@ public class TrackCodeAdapter extends BaseAdapter{
         notifyDataSetChanged();
     }
 
+    public List<InputData> getDataList() {
+        return mDataList;
+    }
+
     @Override
     public int getCount() {
         return mDataList.size();

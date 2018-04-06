@@ -25,7 +25,7 @@ import com.gmail.victorkusov.postcrossinghelper.ui.adapters.OnItemClickListener;
 import com.gmail.victorkusov.postcrossinghelper.R;
 import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
 import com.gmail.victorkusov.postcrossinghelper.ui.adapters.RecyclerViewAdapter;
-import com.gmail.victorkusov.postcrossinghelper.network.RetrofitHelper;
+import com.gmail.victorkusov.postcrossinghelper.network.retrofit.RetrofitHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -176,8 +176,8 @@ public class FrgPlace extends BaseFragment {
         setElementPosition(position);
 
         final Context context = getContext();
-        // get dialog reference
-        AlertDialog.Builder dialog = MessageDialog.getDialog(context);
+        // dialog reference
+        AlertDialog.Builder dialog = null;
 
         //get managed element
         final Place place = mViewAdapter.getItem(position);
@@ -185,42 +185,48 @@ public class FrgPlace extends BaseFragment {
         //[Make title]
         String titleMessage = null;
         if (context != null) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                dialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                dialog = new AlertDialog.Builder(context, android.R.style.TextAppearance_Theme_Dialog);
+            }
             Resources resources = context.getResources();
             if (resources != null) {
                 titleMessage = String.format(resources.getString(R.string.manage_item),
                         resources.getString(place.isSavedToFirebase() ? R.string.want_to_delete : R.string.want_to_save));
             }
-        }
-        dialog.setTitle(titleMessage).setMessage(place.getPostalCode() + " " + place.getPlaceName());
 
-        //[Set buttons]
-        dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (!place.isSavedToFirebase()) {
-                    Toast.makeText(context, "save element #" + position, Toast.LENGTH_SHORT).show();
-                    place.setSavedToFirebase(true);
-                    mViewAdapter.notifyItemChanged(position);
-                    place.addNoteToFirebase();
-                } else {
-                    try {
-                        place.deleteNoteFromFirebase();
-                        place.setSavedToFirebase(false);
+            dialog.setTitle(titleMessage).setMessage(place.getPostalCode() + " " + place.getPlaceName());
+
+            //[Set buttons]
+            dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (!place.isSavedToFirebase()) {
+                        Toast.makeText(context, "save element #" + position, Toast.LENGTH_SHORT).show();
+                        place.setSavedToFirebase(true);
                         mViewAdapter.notifyItemChanged(position);
-                    } catch (Exception ignored) {
+                        place.addNoteToFirebase();
+                    } else {
+                        try {
+                            place.deleteNoteFromFirebase();
+                            place.setSavedToFirebase(false);
+                            mViewAdapter.notifyItemChanged(position);
+                        } catch (Exception ignored) {
+                        }
                     }
+                    clrElemPosition();
                 }
-                clrElemPosition();
-            }
-        });
-        dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                clrElemPosition();
-            }
-        });
+            });
+            dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    clrElemPosition();
+                }
+            });
 
-        dialog.show();
+            dialog.show();
+        }
     }
 
 }

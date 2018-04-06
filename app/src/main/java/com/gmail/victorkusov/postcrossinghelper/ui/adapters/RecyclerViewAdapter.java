@@ -26,11 +26,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         notifyDataSetChanged();
     }
 
-//    public RecyclerViewAdapter(List<Place> queryData, OnItemClickListener listener) {
-//        this.queryData = queryData;
-//        this.mClickListener = listener;
-//    }
-
     @Override
     public DataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 

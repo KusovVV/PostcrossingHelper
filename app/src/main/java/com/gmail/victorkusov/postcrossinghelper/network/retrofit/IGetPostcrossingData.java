@@ -1,4 +1,4 @@
-package com.gmail.victorkusov.postcrossinghelper.network;
+package com.gmail.victorkusov.postcrossinghelper.network.retrofit;
 
 
 import com.gmail.victorkusov.postcrossinghelper.model.DistanceCodeList;
