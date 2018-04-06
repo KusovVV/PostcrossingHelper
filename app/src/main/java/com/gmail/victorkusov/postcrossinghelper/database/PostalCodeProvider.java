@@ -12,12 +12,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.gmail.victorkusov.postcrossinghelper.model.DistanceCode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PostalCodeProvider extends ContentProvider {
 
@@ -89,9 +83,22 @@ public class PostalCodeProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         String select = getSelection(uri);
+        if (selection != null && !selection.isEmpty()) {
+            if (select != null) {
+                select = select.concat(selection);
+            }
+        }
+        Cursor query;
         db = helper.getReadableDatabase();
-
-        return db.query(TABLE_NAME, projection, select, selectionArgs, null, null, sortOrder);
+        try {
+            db.beginTransaction();
+            query = db.query(TABLE_NAME, projection, select, selectionArgs, null, null, sortOrder);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
+        return query;
     }
 
     private String getSelection(Uri uri) {
@@ -126,9 +133,15 @@ public class PostalCodeProvider extends ContentProvider {
         if (MATCHER.match(uri) != MATCHER_POSTAL_CODES) {
             throw new IllegalArgumentException("Wrong URI: " + uri);
         }
-
+        Long rowId;
         db = helper.getWritableDatabase();
-        Long rowId = db.insert(TABLE_NAME, null, values);
+        db.beginTransaction();
+        try {
+            rowId = db.insert(TABLE_NAME, null, values);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
         uri = ContentUris.withAppendedId(CONTENT_URI, rowId);
         //Log.d(TAG, "insert: rowId:" + rowId);
         return uri;
@@ -137,55 +150,78 @@ public class PostalCodeProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         String select = getSelection(uri);
-
+        if (selection != null && !selection.isEmpty()) {
+            if (select != null) {
+                select = select.concat(selection);
+            }
+        }
+        int result;
         db = helper.getWritableDatabase();
-        return db.delete(TABLE_NAME, select, selectionArgs);
+        try {
+            db.beginTransaction();
+            result = db.delete(TABLE_NAME, select, selectionArgs);
+            db.setTransactionSuccessful();
+        }finally {
+            db.endTransaction();
+        }
+        return result;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         String select = getSelection(uri);
-
-        db = helper.getWritableDatabase();
-        db.update(TABLE_NAME, values, select, selectionArgs);
-        return 0;
-    }
-
-    public static List<DistanceCode> getDisplayedData(Context context) {
-        Cursor cursor = context.getContentResolver().query(CONTENT_URI,
-                null, null, null, null);
-
-        List<DistanceCode> codeList = null;
-
-        if (cursor != null) {
-            codeList = new ArrayList<>();
-            try {
-
-                while (cursor.moveToNext()) {
-                    DistanceCode code = new DistanceCode();
-
-                    code.setId(cursor.getInt(cursor.getColumnIndex(TABLE_PLACES_FIELD_ID)));
-                    code.setLongitude(cursor.getDouble(cursor.getColumnIndex(TABLE_PLACES_FIELD_LNG)));
-                    code.setLatitude(cursor.getDouble(cursor.getColumnIndex(TABLE_PLACES_FIELD_LAT)));
-                    code.setDistance(cursor.getDouble(cursor.getColumnIndex(TABLE_PLACES_FIELD_DISTANCE)));
-                    code.setCountryCode(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_COUNTRY_CODE)));
-                    code.setPostalCode(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_POSTAL_CODE)));
-                    code.setPlace(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_PLACE)));
-                    code.setRegion(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_REGION)));
-
-                    Log.d(TAG, "getDisplayedData: id:" + cursor.getColumnIndex(TABLE_PLACES_FIELD_ID));
-
-                    codeList.add(code);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                cursor.close();
+        if (selection != null && !selection.isEmpty()) {
+            if (select != null) {
+                select = select.concat(selection);
             }
         }
-
-        return codeList;
+        int update;
+        db = helper.getWritableDatabase();
+        try {
+            db.beginTransaction();
+             update = db.update(TABLE_NAME, values, select, selectionArgs);
+            db.setTransactionSuccessful();
+        }finally {
+            db.endTransaction();
+        }
+        return update;
     }
+
+//    public static List<DistanceCode> getDisplayedData(Context context) {
+//        Cursor cursor = context.getContentResolver().query(CONTENT_URI,
+//                null, null, null, null);
+//
+//        List<DistanceCode> codeList = null;
+//
+//        if (cursor != null) {
+//            codeList = new ArrayList<>();
+//            try {
+//
+//                while (cursor.moveToNext()) {
+//                    DistanceCode code = new DistanceCode();
+//
+//                    code.setId(cursor.getInt(cursor.getColumnIndex(TABLE_PLACES_FIELD_ID)));
+//                    code.setLongitude(cursor.getDouble(cursor.getColumnIndex(TABLE_PLACES_FIELD_LNG)));
+//                    code.setLatitude(cursor.getDouble(cursor.getColumnIndex(TABLE_PLACES_FIELD_LAT)));
+//                    code.setDistance(cursor.getDouble(cursor.getColumnIndex(TABLE_PLACES_FIELD_DISTANCE)));
+//                    code.setCountryCode(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_COUNTRY_CODE)));
+//                    code.setPostalCode(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_POSTAL_CODE)));
+//                    code.setPlace(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_PLACE)));
+//                    code.setRegion(cursor.getString(cursor.getColumnIndex(TABLE_PLACES_FIELD_REGION)));
+//
+//                    Log.d(TAG, "getDisplayedData: id:" + cursor.getColumnIndex(TABLE_PLACES_FIELD_ID));
+//
+//                    codeList.add(code);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                cursor.close();
+//            }
+//        }
+//
+//        return codeList;
+//    }
 
 
     private class PostalDBHelper extends SQLiteOpenHelper {

@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gmail.victorkusov.postcrossinghelper.utils.MessageDialog;
 import com.gmail.victorkusov.postcrossinghelper.model.Place;
 import com.gmail.victorkusov.postcrossinghelper.model.ModelConstants;
 import com.gmail.victorkusov.postcrossinghelper.model.PlaceList;

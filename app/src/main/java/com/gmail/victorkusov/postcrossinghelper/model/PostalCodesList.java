@@ -1,6 +1,5 @@
 package com.gmail.victorkusov.postcrossinghelper.model;
 
-import com.gmail.victorkusov.postcrossinghelper.database.RealmDBHelper;
 import com.gmail.victorkusov.postcrossinghelper.model.interfaces.IListRealmSaving;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,31 +19,53 @@ public class PostalCodesList implements IListRealmSaving {
 
     @Override
     public void saveListToRealm() {
-        Realm realm = RealmDBHelper.getInstance().getRealm();
-        realm.beginTransaction();
-        realm.delete(RealmPostalCode.class);
-        for (PostalCode postalCode : mPostalCodes) {
-            RealmPostalCode code = new RealmPostalCode(postalCode);
-            realm.copyToRealm(code);
-        }
-        realm.commitTransaction();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                realm.delete(RealmPostalCode.class);
+                for (PostalCode postalCode : mPostalCodes) {
+                    RealmPostalCode code = new RealmPostalCode(postalCode);
+                    realm.copyToRealm(code);
+                }
+                realm.commitTransaction();
+            }
+        }).start();
     }
 
     @Override
     public void getListFromRealm() {
-        Realm realm = RealmDBHelper.getInstance().getRealm();
+        final Object o = new Object();
+        synchronized (o) {
+            if (mPostalCodes == null) {
+                mPostalCodes = new ArrayList<>();
+            }
+            mPostalCodes.clear();
 
-        realm.beginTransaction();
-        List<RealmPostalCode> listData = realm.where(RealmPostalCode.class).findAll();
-        realm.commitTransaction();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (o) {
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        List<RealmPostalCode> listData = realm.where(RealmPostalCode.class).findAll();
+                        realm.commitTransaction();
 
-        if (mPostalCodes == null) {
-            mPostalCodes = new ArrayList<>();
-        }
-        mPostalCodes.clear();
-        for (RealmPostalCode code : listData) {
-            PostalCode item = new PostalCode(code);
-            mPostalCodes.add(item);
+                        for (RealmPostalCode code : listData) {
+                            PostalCode item = new PostalCode(code);
+                            mPostalCodes.add(item);
+                        }
+                        o.notify();
+                    }
+                }
+            }).start();
+            try {
+                o.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

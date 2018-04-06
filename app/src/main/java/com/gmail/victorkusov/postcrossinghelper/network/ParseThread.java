@@ -1,6 +1,8 @@
 package com.gmail.victorkusov.postcrossinghelper.network;
 
 
+import android.util.Log;
+
 import com.gmail.victorkusov.postcrossinghelper.model.InputData;
 
 import org.jsoup.Jsoup;
@@ -9,11 +11,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class ParseThread extends Thread {
     private static final String URL_ADDRESS = "https://webservices.belpost.by/searchRu/";
+    private static final String TAG = ParseThread.class.getSimpleName();
 
     private ICompleteParseDataListener mHandler;
     private String mTrackCode;
@@ -64,6 +72,7 @@ public class ParseThread extends Thread {
                     }
                 }
             }
+
             mHandler.onDataReady(dataList);
         } catch (IOException e) {
             e.printStackTrace();

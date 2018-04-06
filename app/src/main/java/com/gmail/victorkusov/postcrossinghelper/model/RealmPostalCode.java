@@ -1,9 +1,6 @@
 package com.gmail.victorkusov.postcrossinghelper.model;
 
 
-import com.gmail.victorkusov.postcrossinghelper.database.RealmDBHelper;
-
-import io.realm.Realm;
 import io.realm.RealmObject;
 
 

@@ -159,7 +159,7 @@ public class WorkScreenActivity extends AppCompatActivity {
             }
         }
 
-        if (Utils.isGeoServicePermissonEnabled(this)) {
+        if (Utils.isGeoServicePermissonEnabled(WorkScreenActivity.this)) {
             Utils.startGeoService(WorkScreenActivity.this);
         } else {
             requestForGeoServicePermission();

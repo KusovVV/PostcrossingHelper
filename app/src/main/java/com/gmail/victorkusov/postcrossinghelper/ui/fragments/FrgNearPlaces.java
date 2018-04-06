@@ -45,6 +45,7 @@ public class FrgNearPlaces extends BaseFragment {
     private LinearLayout mContainerLayout;
 
     private List<List<TextView>> mViews = new ArrayList<>();
+    private boolean mBound = false;
 
 
     public FrgNearPlaces() {
@@ -97,6 +98,7 @@ public class FrgNearPlaces extends BaseFragment {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "onServiceConnected: ");
+            mBound = true;
             Messenger messenger = new Messenger(service);
             Message msg = Message.obtain(null, REQUEST_FOR_UPDATE);
             msg.replyTo = new Messenger(new ResponseHandler(new INewDataNotify() {
@@ -115,6 +117,7 @@ public class FrgNearPlaces extends BaseFragment {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
             Log.d(TAG, "onServiceDisconnected: ");
         }
     };
@@ -132,7 +135,7 @@ public class FrgNearPlaces extends BaseFragment {
         Context context = getContext();
         if (context != null) {
             context.getContentResolver().unregisterContentObserver(mObserver);
-            if (mServiceConnection != null) {
+            if (mBound) {
                 context.unbindService(mServiceConnection);
             }
         }
