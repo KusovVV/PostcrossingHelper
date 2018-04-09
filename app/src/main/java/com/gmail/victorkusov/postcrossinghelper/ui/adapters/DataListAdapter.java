@@ -70,8 +70,8 @@ public class DataListAdapter extends BaseAdapter {
             holder.mProgressBar.setVisibility(View.GONE);
             holder.mButtonSave.setVisibility(View.VISIBLE);
             holder.mButtonSave.setImageDrawable(postalCode.isSavedToFirebase() ?
-                    ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_delete_24dp) :
-                    ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_save_blue_24dp));
+                    ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_delete) :
+                    ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_save));
         } else {
             holder.mProgressBar.setVisibility(View.VISIBLE);
             holder.mButtonSave.setVisibility(View.GONE);

@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="start"
             android:text="@string/postal_code"
             android:textColor="@color/white"/>
 
@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="start"
             android:text="@string/distance"
             android:textColor="@color/white"/>
 
@@ -58,7 +58,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="start"
             android:text="@string/place_name"
             android:textColor="@color/white"/>
 
@@ -86,7 +86,7 @@
             android:layout_weight="1"
             android:background="@color/alpha_background"
             android:minHeight="40dp"
-            android:src="@drawable/ic_chevron_left_black_24dp"/>
+            android:src="@drawable/ic_chevron_left"/>
 
         <ImageButton
             android:id="@+id/widget_btn_next"
@@ -95,7 +95,7 @@
             android:layout_weight="1"
             android:background="@color/alpha_background"
             android:minHeight="40dp"
-            android:src="@drawable/ic_chevron_right_black_24dp"/>
+            android:src="@drawable/ic_chevron_right"/>
 
     </LinearLayout>
 </LinearLayout>

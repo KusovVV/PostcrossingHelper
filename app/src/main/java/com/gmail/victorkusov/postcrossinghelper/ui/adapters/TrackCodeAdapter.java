@@ -46,7 +46,7 @@ public class TrackCodeAdapter extends BaseAdapter{
         final TrackHolder holder;
 
         if(convertView == null){
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.items_dialog_list,parent,false);
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.items_track_list,parent,false);
             holder = new TrackHolder(convertView);
             convertView.setTag(holder);
         } else {

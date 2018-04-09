@@ -181,18 +181,6 @@ public class FrgNearPlaces extends BaseFragment {
         }
     }
 
-//    private List<DistanceCode> getQueryFromSQLiteDatabase() {
-//        Context context = getActivity();
-//        if (context != null) {
-//            ContentResolver contentResolver = context.getContentResolver();
-//            if (contentResolver != null) {
-//                return PostalCodeProvider.getDisplayedData(context);
-//            }
-//        }
-//        return null;
-//    }
-
-
     @Override
     public void getListData(String query) {
 

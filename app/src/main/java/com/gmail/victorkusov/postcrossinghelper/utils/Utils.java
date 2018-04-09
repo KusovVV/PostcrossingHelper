@@ -129,7 +129,7 @@ public class Utils {
     private static void drawPage(PdfDocument.Page page, List<InputData> dataList) {
         Canvas canvas = page.getCanvas();
 
-        float linePointer = LINE_X_OFFSET;
+        float linePointer = START_Y_POINTER;
 
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
@@ -138,22 +138,18 @@ public class Utils {
 
         paint.setTextSize(BODY_TEXT_SIZE);
         for (InputData inputData : dataList) {
-            canvas.drawText(BODY_TEXT_DATE, START_X_OFFSET_LINE, START_Y_POINTER, paint);
+            canvas.drawText(BODY_TEXT_DATE, START_X_OFFSET_LINE, linePointer, paint);
             linePointer += 6;
-            canvas.drawText(inputData.getDateTime(), LINE_X_OFFSET, START_Y_POINTER, paint);
+            canvas.drawText(inputData.getDateTime(), LINE_X_OFFSET, linePointer, paint);
             linePointer += 6;
-            canvas.drawText(BODY_TEXT_EVENT, START_X_OFFSET_LINE, START_Y_POINTER, paint);
+            canvas.drawText(BODY_TEXT_EVENT, START_X_OFFSET_LINE, linePointer, paint);
             linePointer += 6;
-            canvas.drawText(inputData.getEvent(), LINE_X_OFFSET, START_Y_POINTER, paint);
+            canvas.drawText(inputData.getEvent(), LINE_X_OFFSET, linePointer, paint);
             linePointer += 6;
-            canvas.drawText(BODY_TEXT_PLACE, START_X_OFFSET_LINE, START_Y_POINTER, paint);
+            canvas.drawText(BODY_TEXT_PLACE, START_X_OFFSET_LINE, linePointer, paint);
             linePointer += 6;
-            canvas.drawText(inputData.getPlace(), LINE_X_OFFSET, START_Y_POINTER, paint);
+            canvas.drawText(inputData.getPlace(), LINE_X_OFFSET, linePointer, paint);
             linePointer += 10;
         }
-    }
-
-    public static void requesForFilePermission() {
-
     }
 }

@@ -45,8 +45,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.mButtonSave.setVisibility(View.VISIBLE);
 
         holder.mButtonSave.setImageDrawable(postalCode.isSavedToFirebase() ?
-                ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_delete_24dp) :
-                ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_save_blue_24dp));
+                ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_delete) :
+                ContextCompat.getDrawable(holder.mButtonSave.getContext(), R.drawable.ic_save));
 
         holder.mButtonSave.setOnClickListener(new View.OnClickListener() {
             @Override

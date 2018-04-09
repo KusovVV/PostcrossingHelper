@@ -23,14 +23,15 @@ public class PostalCodesList implements IListRealmSaving {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
-                realm.delete(RealmPostalCode.class);
-                for (PostalCode postalCode : mPostalCodes) {
-                    RealmPostalCode code = new RealmPostalCode(postalCode);
-                    realm.copyToRealm(code);
+                try (Realm realm = Realm.getDefaultInstance()) {
+                    realm.beginTransaction();
+                    realm.delete(RealmPostalCode.class);
+                    for (PostalCode postalCode : mPostalCodes) {
+                        RealmPostalCode code = new RealmPostalCode(postalCode);
+                        realm.copyToRealm(code);
+                    }
+                    realm.commitTransaction();
                 }
-                realm.commitTransaction();
             }
         }).start();
     }
@@ -48,14 +49,16 @@ public class PostalCodesList implements IListRealmSaving {
                 @Override
                 public void run() {
                     synchronized (o) {
-                        Realm realm = Realm.getDefaultInstance();
-                        realm.beginTransaction();
-                        List<RealmPostalCode> listData = realm.where(RealmPostalCode.class).findAll();
-                        realm.commitTransaction();
+                        List<RealmPostalCode> listData;
+                        try (Realm realm = Realm.getDefaultInstance()) {
+                            realm.beginTransaction();
+                            listData = realm.where(RealmPostalCode.class).findAll();
+                            realm.commitTransaction();
 
-                        for (RealmPostalCode code : listData) {
-                            PostalCode item = new PostalCode(code);
-                            mPostalCodes.add(item);
+                            for (RealmPostalCode code : listData) {
+                                PostalCode item = new PostalCode(code);
+                                mPostalCodes.add(item);
+                            }
                         }
                         o.notify();
                     }

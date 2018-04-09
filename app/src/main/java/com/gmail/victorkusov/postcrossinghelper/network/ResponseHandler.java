@@ -17,8 +17,8 @@ public class ResponseHandler extends Handler {
 
     private static final int DATA_RESPONSE = 2;
     private static final String KEY_MESSAGE = "message";
-    private static final String OBJECT_SEPARATOR = "\\&";
-    private static final String OBJECT_FIELDS_SEPARATOR = "\\%";
+    private static final String OBJECT_SEPARATOR = "&";
+    private static final String OBJECT_FIELDS_SEPARATOR = "%";
 
     private INewDataNotify mDataNotify;
 

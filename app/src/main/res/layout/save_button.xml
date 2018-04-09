@@ -12,7 +12,7 @@
         android:contentDescription="@string/btn_save"
         android:minHeight="48dp"
         android:minWidth="48dp"
-        android:src="@drawable/ic_save_blue_24dp"
+        android:src="@drawable/ic_save"
         android:visibility="gone"/>
 
     <ProgressBar

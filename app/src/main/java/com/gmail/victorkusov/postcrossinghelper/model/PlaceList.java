@@ -22,14 +22,15 @@ public class PlaceList implements IListRealmSaving {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
-                realm.delete(RealmPlace.class);
-                for (Place place : mPlaces) {
-                    RealmPlace code = new RealmPlace(place);
-                    realm.copyToRealm(code);
+                try (Realm realm = Realm.getDefaultInstance()) {
+                    realm.beginTransaction();
+                    realm.delete(RealmPlace.class);
+                    for (Place place : mPlaces) {
+                        RealmPlace code = new RealmPlace(place);
+                        realm.copyToRealm(code);
+                    }
+                    realm.commitTransaction();
                 }
-                realm.commitTransaction();
             }
         }).start();
     }
@@ -47,15 +48,18 @@ public class PlaceList implements IListRealmSaving {
                 @Override
                 public void run() {
                     synchronized (o) {
-                        Realm realm = Realm.getDefaultInstance();
-                        realm.beginTransaction();
-                        List<RealmPlace> listData = realm.where(RealmPlace.class).findAll();
-                        realm.commitTransaction();
+                        List<RealmPlace> listData;
+                        try (Realm realm = Realm.getDefaultInstance()) {
+                            realm.beginTransaction();
+                            listData = realm.where(RealmPlace.class).findAll();
+                            realm.commitTransaction();
 
-                        for (RealmPlace code : listData) {
-                            Place item = new Place(code);
-                            mPlaces.add(item);
+                            for (RealmPlace code : listData) {
+                                Place item = new Place(code);
+                                mPlaces.add(item);
+                            }
                         }
+
                         o.notify();
                     }
                 }

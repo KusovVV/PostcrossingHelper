@@ -1,53 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="app_name" translatable="false">PostcrossingHelper</string>
+    <string name="app_name" translatable="false">PostcrossingHelper</string>
 
-<string name="facebook_app_id">883273265209425</string>
-<string name="fb_login_protocol_scheme" translatable="false">fb883273265209425</string>
-
-
-<string name="sign_ed_email" translatable="false">Email</string>
-<string name="sign_ed_password" translatable="false">Password</string>
-<string name="sign_btn_register" translatable="false">Register</string>
-<string name="sign_btn_sign_in" translatable="false">Sign In</string>
-<string name="main_menu_code">code</string>
-<string name="main_menu_place">place</string>
-<string name="main_menu_nearly_places">places</string>
+    <string name="facebook_app_id">883273265209425</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb883273265209425</string>
 
 
-<string name="empty_list">To add information use search menu button \n enter %1$s</string>
+    <string name="sign_ed_email" translatable="false">Email</string>
+    <string name="sign_ed_password" translatable="false">Password</string>
+    <string name="sign_btn_register" translatable="false">Register</string>
+    <string name="sign_btn_sign_in" translatable="false">Sign In</string>
 
+    <string name="main_menu_code">code</string>
+    <string name="main_menu_place">place</string>
+    <string name="main_menu_nearly_places">places</string>
+
+
+    <string name="empty_list">To add information use search menu button \n enter %1$s</string>
     <string name="postal_code">postal code</string>
     <string name="place_name">place name</string>
+
     <string name="btn_save">save note</string>
 
-    <string name="manage_item">Do you want to %1$s this note</string>
 
+    <string name="manage_item">Do you want to %1$s this note</string>
     <string name="want_to_save">save</string>
     <string name="want_to_delete">delete</string>
-    <string name="widget_name">Widget Name</string>
+
+
+    <string name="widget_name">Near post offices</string>
+
+    <string name="navigator_track_code_search">track code search</string>
     <string name="navigation_items_sign_out">Sign out</string>
+
 
     <string name="show_entries">Show saved entries</string>
     <string name="hide_entries">Hide saved entries</string>
-    <string name="navigator_track_code_search">track code search</string>
 
     <string-array name="show_firebase_entries">
         <item>Show saved entries</item>
         <item>Hide saved entries</item>
     </string-array>
 
-    <string name="dialog_track_btn_show_info">show info</string>
-    <string name="dialog_track_ed_enter_track_code">Enter your track code</string>
+    <string name="track_btn_show_info">show info</string>
+    <string name="track_ed_enter_track_code">Enter your track code</string>
+
     <string name="dialog_confirm_registration">Confirm registration</string>
     <string name="dialog_reg_message">Register %1$s</string>
+
     <string name="permission_location">This permission uses to get your Location. Please enable it next time</string>
     <string name="permission_files">Cannot export file</string>
+    <string name="dialog_permission_service_title">Location service</string>
+    <string name="dialog_permission_service_message">The permission allows your application to connect to service which provides user location</string>
+
     <string name="widget_btn_prev">previous</string>
     <string name="widget_btn_next">next</string>
+
     <string name="distance">distance</string>
-    <string name="dialog_permission_service_title">Location service</string>
-    <string name="dialog_permission_service_message">The permission allows your application to connect to service wich provides user location</string>
     <string name="dialog_track_btn_export">Export</string>
     <string name="navigator_track_share_report">send to</string>
 </resources>

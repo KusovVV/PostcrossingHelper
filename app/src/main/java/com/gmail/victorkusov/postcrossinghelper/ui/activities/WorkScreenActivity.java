@@ -68,7 +68,6 @@ public class WorkScreenActivity extends AppCompatActivity {
 
     private String frgTag = FrgPostalCode.TAG;
     private FirebaseAuth mFirebaseAuth;
-    private ListView mTrackCodeListView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/track_menu_action_share"
-        android:icon="@drawable/ic_share_black_24dp"
+        android:icon="@drawable/ic_share"
         android:title="@android:string/search_go"
         android:visible="false"
         app:showAsAction="ifRoom|collapseActionView"/>

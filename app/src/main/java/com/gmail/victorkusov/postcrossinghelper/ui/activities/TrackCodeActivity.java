@@ -40,7 +40,6 @@ public class TrackCodeActivity extends AppCompatActivity {
     public static final String TYPE_PDF = "application/pdf";
 
     private AppCompatEditText mEditText;
-    private AppCompatButton mButtonTrack;
     private ListView mTrackCodeListView;
     private MenuItem mItemShare;
 
@@ -52,10 +51,10 @@ public class TrackCodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_track_code);
 
         mEditText = findViewById(R.id.activity_track_edit_track);
-        mButtonTrack = findViewById(R.id.activity_track_btn_track);
+        AppCompatButton buttonTrack = findViewById(R.id.activity_track_btn_track);
         mTrackCodeListView = findViewById(R.id.activity_track_list_results);
 
-        mButtonTrack.setOnClickListener(new View.OnClickListener() {
+        buttonTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mTrackCode = mEditText.getText().toString();

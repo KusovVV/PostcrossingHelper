@@ -176,7 +176,7 @@ public class FrgPlace extends BaseFragment {
 
         final Context context = getContext();
         // dialog reference
-        AlertDialog.Builder dialog = null;
+        AlertDialog.Builder dialog;
 
         //get managed element
         final Place place = mViewAdapter.getItem(position);

@@ -17,14 +17,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gmail.victorkusov.postcrossinghelper.model.PostalCode;
+import com.gmail.victorkusov.postcrossinghelper.R;
 import com.gmail.victorkusov.postcrossinghelper.model.ModelConstants;
+import com.gmail.victorkusov.postcrossinghelper.model.PostalCode;
+import com.gmail.victorkusov.postcrossinghelper.model.PostalCodesList;
+import com.gmail.victorkusov.postcrossinghelper.network.retrofit.RetrofitHelper;
+import com.gmail.victorkusov.postcrossinghelper.ui.adapters.DataListAdapter;
 import com.gmail.victorkusov.postcrossinghelper.ui.adapters.OnItemClickListener;
 import com.gmail.victorkusov.postcrossinghelper.utils.Utils;
-import com.gmail.victorkusov.postcrossinghelper.ui.adapters.DataListAdapter;
-import com.gmail.victorkusov.postcrossinghelper.R;
-import com.gmail.victorkusov.postcrossinghelper.network.retrofit.RetrofitHelper;
-import com.gmail.victorkusov.postcrossinghelper.model.PostalCodesList;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -124,8 +124,10 @@ public class FrgPostalCode extends BaseFragment {
 
                     code.setPostalCode((String) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_POSTAL_CODE).getValue());
                     code.setCountryCode((String) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_COUNTRY_CODE).getValue());
-                    code.setLatitude((Double) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_LATITUDE).getValue());
-                    code.setLongitude((Double) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_LONGITUDE).getValue());
+                    Double latitude = (Double) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_LATITUDE).getValue();
+                    code.setLatitude(latitude != null ? latitude : 0.00);
+                    Double longitude = (Double) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_LONGITUDE).getValue();
+                    code.setLongitude(longitude != null ? longitude : 0.00);
                     code.setPlace((String) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_PLACE).getValue());
                     code.setRegion((String) next.child(ModelConstants.TABLE_POSTALCODE_FIELD_REGION).getValue());
                     code.setIsSavedToFirebase(true);

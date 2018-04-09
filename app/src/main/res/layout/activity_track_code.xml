@@ -15,21 +15,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/dialog_track_ed_enter_track_code"
-            android:text="RA229895990FI"/>
+            android:hint="@string/track_ed_enter_track_code"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/activity_track_btn_track"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/dialog_track_btn_show_info"/>
-
-        <!--<Button-->
-            <!--android:id="@+id/dialog_track_btn_export"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/dialog_track_btn_export"-->
-            <!--android:visibility="gone"/>-->
+            android:text="@string/track_btn_show_info"/>
 
     </LinearLayout>
 
